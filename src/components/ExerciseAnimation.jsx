@@ -1,18 +1,49 @@
 import '../styles/animations.css';
 
+// Reusable body part components for flat-design figure
+const HEAD = (cx, cy, r = 11) => (
+  <circle cx={cx} cy={cy} r={r} fill="var(--figure-fill)" />
+);
+
+const TORSO = (x, y, w = 20, h = 38) => (
+  <rect x={x} y={y} width={w} height={h} rx={w / 2} fill="var(--figure-fill)" />
+);
+
+const LIMB = (x1, y1, x2, y2, w = 10) => (
+  <line x1={x1} y1={y1} x2={x2} y2={y2}
+    stroke="var(--figure-fill)" strokeWidth={w} strokeLinecap="round" />
+);
+
+const GROUND = (y = 158) => (
+  <ellipse cx="70" cy={y} rx="50" ry="4" fill="var(--ground-color)" />
+);
+
+// ---- Individual exercise animations ----
+
 function JumpingJacks() {
   return (
     <svg viewBox="0 0 140 170">
+      <GROUND />
       {/* Head */}
-      <circle cx="70" cy="50" r="15" className="figure-head" />
+      {HEAD(70, 48)}
       {/* Torso */}
-      <line x1="70" y1="65" x2="70" y2="115" className="figure-body" />
-      {/* Arms - animated */}
-      <path d="M50 75 L70 95" className="figure-body jj-arm-l" />
-      <path d="M90 75 L70 95" className="figure-body jj-arm-r" />
-      {/* Legs - animated */}
-      <path d="M60 115 L70 150" className="figure-body jj-leg-l" />
-      <path d="M80 115 L70 150" className="figure-body jj-leg-r" />
+      {TORSO(60, 62, 20, 55)}
+      {/* Left arm */}
+      <g className="jj-arm-l">
+        {LIMB(62, 78, 42, 110)}
+      </g>
+      {/* Right arm */}
+      <g className="jj-arm-r">
+        {LIMB(78, 78, 98, 110)}
+      </g>
+      {/* Left leg */}
+      <g className="jj-leg-l">
+        {LIMB(64, 118, 58, 155)}
+      </g>
+      {/* Right leg */}
+      <g className="jj-leg-r">
+        {LIMB(76, 118, 82, 155)}
+      </g>
     </svg>
   );
 }
@@ -21,19 +52,22 @@ function WallSit() {
   return (
     <svg viewBox="0 0 140 170">
       {/* Wall */}
-      <line x1="110" y1="20" x2="110" y2="160" stroke="var(--text-muted)" strokeWidth="3" strokeDasharray="6,4" />
-      <g className="wall-sit-figure">
-        <circle cx="80" cy="50" r="15" className="figure-head" />
-        {/* Back against wall */}
-        <line x1="80" y1="65" x2="80" y2="100" className="figure-body" />
+      <rect x="100" y="20" width="6" height="140" rx="2" fill="rgba(255,255,255,0.1)" />
+      <g className="wall-sit-body">
+        {HEAD(80, 48)}
+        {/* Back/torso vertical against wall */}
+        {TORSO(70, 60, 20, 35)}
+        {/* Upper arms */}
+        {LIMB(72, 70, 60, 88)}
+        {LIMB(88, 70, 96, 88)}
         {/* Thighs horizontal */}
-        <line x1="80" y1="100" x2="55" y2="100" className="figure-body" />
+        {LIMB(75, 95, 55, 97, 11)}
+        {LIMB(85, 95, 55, 97, 11)}
         {/* Shins vertical */}
-        <line x1="55" y1="100" x2="55" y2="135" className="figure-body" />
-        {/* Arms down */}
-        <line x1="80" y1="75" x2="95" y2="95" className="figure-body" />
-        <line x1="80" y1="75" x2="65" y2="90" className="figure-body" />
+        {LIMB(55, 97, 54, 135, 10)}
+        {LIMB(56, 97, 55, 135, 10)}
       </g>
+      <GROUND />
     </svg>
   );
 }
@@ -41,18 +75,19 @@ function WallSit() {
 function PushUps() {
   return (
     <svg viewBox="0 0 140 170">
-      <g className="pushup-figure">
-        {/* Head */}
-        <circle cx="30" cy="95" r="12" className="figure-head" />
-        {/* Body - angled plank */}
-        <line x1="40" y1="100" x2="110" y2="115" className="figure-body" />
-        {/* Arms */}
-        <line x1="40" y1="100" x2="35" y2="130" className="figure-body" />
+      <GROUND y={142} />
+      <g className="pushup-body">
+        {HEAD(26, 92)}
+        {/* Torso angled */}
+        <rect x="32" y="96" width="78" height="16" rx="8"
+          fill="var(--figure-fill)" transform="rotate(5, 32, 100)" />
+        {/* Arms - supporting */}
+        {LIMB(38, 106, 36, 135)}
+        {LIMB(46, 106, 44, 135)}
         {/* Legs */}
-        <line x1="110" y1="115" x2="125" y2="130" className="figure-body" />
+        {LIMB(100, 108, 118, 135)}
+        {LIMB(108, 108, 125, 135)}
       </g>
-      {/* Ground */}
-      <line x1="15" y1="140" x2="130" y2="140" stroke="var(--text-muted)" strokeWidth="2" />
     </svg>
   );
 }
@@ -60,18 +95,18 @@ function PushUps() {
 function Crunches() {
   return (
     <svg viewBox="0 0 140 170">
-      {/* Ground */}
-      <line x1="10" y1="140" x2="130" y2="140" stroke="var(--text-muted)" strokeWidth="2" />
-      {/* Lower body - fixed on ground */}
-      <line x1="70" y1="130" x2="110" y2="125" className="figure-body" />
-      <line x1="110" y1="125" x2="120" y2="135" className="figure-body" />
-      {/* Upper body - crunching */}
+      <GROUND y={148} />
+      {/* Lower body fixed - legs bent */}
+      {LIMB(70, 132, 100, 120, 11)}
+      {LIMB(100, 120, 108, 142, 10)}
+      {/* Upper body crunching */}
       <g className="crunch-upper">
-        <circle cx="40" cy="100" r="12" className="figure-head" />
-        <line x1="50" y1="105" x2="70" y2="130" className="figure-body" />
-        {/* Hands behind head */}
-        <line x1="45" y1="105" x2="35" y2="95" className="figure-body" />
-        <line x1="45" y1="105" x2="50" y2="90" className="figure-body" />
+        {HEAD(38, 92)}
+        <rect x="40" y="98" width="35" height="16" rx="8"
+          fill="var(--figure-fill)" transform="rotate(15, 70, 108)" />
+        {/* Arms behind head */}
+        {LIMB(42, 95, 50, 85)}
+        {LIMB(36, 90, 44, 80)}
       </g>
     </svg>
   );
@@ -80,19 +115,21 @@ function Crunches() {
 function StepUps() {
   return (
     <svg viewBox="0 0 140 170">
-      {/* Step/box */}
-      <rect x="60" y="120" width="50" height="25" rx="3" fill="none" stroke="var(--text-muted)" strokeWidth="2" />
-      <g className="stepup-figure">
-        <circle cx="70" cy="55" r="13" className="figure-head" />
-        <line x1="70" y1="68" x2="70" y2="108" className="figure-body" />
-        {/* Stepping leg - on box */}
-        <line x1="70" y1="108" x2="80" y2="118" className="figure-body" />
+      {/* Step box */}
+      <rect x="55" y="125" width="50" height="22" rx="4"
+        fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+      <g className="step-body">
+        {HEAD(70, 40)}
+        {TORSO(60, 54, 20, 42)}
+        {/* Arms */}
+        {LIMB(62, 65, 50, 85)}
+        {LIMB(78, 65, 90, 55)}
+        {/* Stepping leg on box */}
+        {LIMB(68, 96, 72, 123, 11)}
         {/* Trailing leg */}
-        <line x1="70" y1="108" x2="50" y2="140" className="figure-body" />
-        {/* Arms swinging */}
-        <line x1="70" y1="78" x2="55" y2="90" className="figure-body" />
-        <line x1="70" y1="78" x2="85" y2="68" className="figure-body" />
+        {LIMB(72, 96, 52, 148, 10)}
       </g>
+      <GROUND />
     </svg>
   );
 }
@@ -100,17 +137,19 @@ function StepUps() {
 function Squats() {
   return (
     <svg viewBox="0 0 140 170">
-      <g className="squat-figure">
-        <circle cx="70" cy="40" r="14" className="figure-head" />
-        <line x1="70" y1="54" x2="70" y2="95" className="figure-body" />
-        {/* Arms forward for balance */}
-        <line x1="70" y1="70" x2="45" y2="72" className="figure-body" />
-        <line x1="70" y1="70" x2="95" y2="72" className="figure-body" />
-        {/* Legs - bending */}
-        <line x1="70" y1="95" x2="50" y2="120" className="figure-body" />
-        <line x1="50" y1="120" x2="50" y2="150" className="figure-body" />
-        <line x1="70" y1="95" x2="90" y2="120" className="figure-body" />
-        <line x1="90" y1="120" x2="90" y2="150" className="figure-body" />
+      <GROUND />
+      <g className="squat-body">
+        {HEAD(70, 38)}
+        {TORSO(60, 50, 20, 42)}
+        {/* Arms forward */}
+        {LIMB(62, 65, 42, 68)}
+        {LIMB(78, 65, 98, 68)}
+        {/* Left leg */}
+        {LIMB(64, 92, 50, 118, 11)}
+        {LIMB(50, 118, 48, 155, 10)}
+        {/* Right leg */}
+        {LIMB(76, 92, 90, 118, 11)}
+        {LIMB(90, 118, 92, 155, 10)}
       </g>
     </svg>
   );
@@ -119,20 +158,22 @@ function Squats() {
 function TricepDips() {
   return (
     <svg viewBox="0 0 140 170">
-      {/* Chair/bench */}
-      <rect x="65" y="80" width="55" height="8" rx="3" fill="none" stroke="var(--text-muted)" strokeWidth="2" />
-      <line x1="70" y1="88" x2="70" y2="145" stroke="var(--text-muted)" strokeWidth="2" />
-      <line x1="115" y1="88" x2="115" y2="145" stroke="var(--text-muted)" strokeWidth="2" />
-      <g className="dip-figure">
-        <circle cx="55" cy="55" r="13" className="figure-head" />
-        <line x1="55" y1="68" x2="55" y2="100" className="figure-body" />
-        {/* Arms on bench */}
-        <line x1="55" y1="75" x2="75" y2="78" className="figure-body" />
-        <line x1="55" y1="75" x2="40" y2="78" className="figure-body" />
+      {/* Bench */}
+      <rect x="60" y="82" width="55" height="10" rx="4"
+        fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+      <rect x="65" y="92" width="6" height="52" rx="2" fill="rgba(255,255,255,0.06)" />
+      <rect x="104" y="92" width="6" height="52" rx="2" fill="rgba(255,255,255,0.06)" />
+      <g className="dip-body">
+        {HEAD(55, 48)}
+        {TORSO(45, 60, 20, 35)}
+        {/* Arms gripping bench */}
+        {LIMB(50, 68, 66, 80)}
+        {LIMB(60, 68, 72, 80)}
         {/* Legs forward */}
-        <line x1="55" y1="100" x2="30" y2="140" className="figure-body" />
-        <line x1="55" y1="100" x2="40" y2="140" className="figure-body" />
+        {LIMB(50, 95, 28, 140, 10)}
+        {LIMB(56, 95, 34, 140, 10)}
       </g>
+      <GROUND />
     </svg>
   );
 }
@@ -140,18 +181,18 @@ function TricepDips() {
 function Plank() {
   return (
     <svg viewBox="0 0 140 170">
-      <g className="plank-figure">
-        <circle cx="28" cy="95" r="12" className="figure-head" />
-        {/* Body - straight line */}
-        <line x1="38" y1="100" x2="115" y2="108" className="figure-body" />
-        {/* Forearms on ground */}
-        <line x1="38" y1="100" x2="42" y2="125" className="figure-body" />
-        <line x1="42" y1="125" x2="55" y2="125" className="figure-body" />
+      <GROUND y={138} />
+      <g className="plank-body">
+        {HEAD(24, 92)}
+        {/* Body - straight plank */}
+        <rect x="30" y="96" width="82" height="14" rx="7"
+          fill="var(--figure-fill)" transform="rotate(3, 30, 100)" />
+        {/* Forearms */}
+        {LIMB(34, 105, 38, 130)}
+        {LIMB(38, 130, 52, 130, 8)}
         {/* Toes */}
-        <line x1="115" y1="108" x2="118" y2="125" className="figure-body" />
+        {LIMB(112, 108, 116, 130)}
       </g>
-      {/* Ground */}
-      <line x1="15" y1="130" x2="130" y2="130" stroke="var(--text-muted)" strokeWidth="2" />
     </svg>
   );
 }
@@ -159,14 +200,25 @@ function Plank() {
 function HighKnees() {
   return (
     <svg viewBox="0 0 140 170">
-      <circle cx="70" cy="40" r="14" className="figure-head" />
-      <line x1="70" y1="54" x2="70" y2="100" className="figure-body" />
-      {/* Arms - pumping */}
-      <path d="M55 75 L40 90" className="figure-body hk-arm-l" />
-      <path d="M85 75 L100 65" className="figure-body hk-arm-r" />
-      {/* Legs - alternating high knees */}
-      <path d="M60 115 L55 150" className="figure-body hk-leg-l" />
-      <path d="M80 115 L85 95" className="figure-body hk-leg-r" />
+      <GROUND />
+      {HEAD(70, 38)}
+      {TORSO(60, 50, 20, 48)}
+      {/* Left arm */}
+      <g className="hk-arm-l">
+        {LIMB(62, 78, 45, 95)}
+      </g>
+      {/* Right arm */}
+      <g className="hk-arm-r">
+        {LIMB(78, 78, 95, 62)}
+      </g>
+      {/* Left leg */}
+      <g className="hk-leg-l">
+        {LIMB(64, 118, 60, 155, 11)}
+      </g>
+      {/* Right leg */}
+      <g className="hk-leg-r">
+        {LIMB(76, 118, 80, 155, 11)}
+      </g>
     </svg>
   );
 }
@@ -174,18 +226,19 @@ function HighKnees() {
 function Lunges() {
   return (
     <svg viewBox="0 0 140 170">
-      <g className="lunge-figure">
-        <circle cx="70" cy="35" r="13" className="figure-head" />
-        <line x1="70" y1="48" x2="70" y2="90" className="figure-body" />
+      <GROUND />
+      <g className="lunge-body">
+        {HEAD(70, 30)}
+        {TORSO(60, 42, 20, 42)}
         {/* Arms at sides */}
-        <line x1="70" y1="60" x2="55" y2="80" className="figure-body" />
-        <line x1="70" y1="60" x2="85" y2="80" className="figure-body" />
-        {/* Front leg - bent */}
-        <line x1="70" y1="90" x2="50" y2="115" className="figure-body" />
-        <line x1="50" y1="115" x2="50" y2="145" className="figure-body" />
-        {/* Back leg - extended */}
-        <line x1="70" y1="90" x2="100" y2="120" className="figure-body" />
-        <line x1="100" y1="120" x2="110" y2="145" className="figure-body" />
+        {LIMB(62, 55, 50, 78)}
+        {LIMB(78, 55, 90, 78)}
+        {/* Front leg bent */}
+        {LIMB(64, 84, 48, 112, 11)}
+        {LIMB(48, 112, 46, 150, 10)}
+        {/* Back leg extended */}
+        {LIMB(76, 84, 100, 115, 11)}
+        {LIMB(100, 115, 112, 150, 10)}
       </g>
     </svg>
   );
@@ -194,17 +247,19 @@ function Lunges() {
 function PushUpRotation() {
   return (
     <svg viewBox="0 0 140 170">
-      <g className="pushup-rot-figure">
-        <circle cx="30" cy="95" r="12" className="figure-head" />
-        <line x1="40" y1="100" x2="110" y2="115" className="figure-body" />
-        {/* Arms */}
-        <line x1="40" y1="100" x2="35" y2="130" className="figure-body" />
-        {/* Extended arm (rotation) */}
-        <line x1="55" y1="105" x2="45" y2="70" className="figure-body" />
+      <GROUND y={142} />
+      <g className="pushrot-body">
+        {HEAD(26, 90)}
+        <rect x="32" y="94" width="78" height="16" rx="8"
+          fill="var(--figure-fill)" transform="rotate(5, 32, 98)" />
+        {/* Supporting arm */}
+        {LIMB(38, 105, 36, 135)}
+        {/* Rotating arm up */}
+        {LIMB(50, 98, 38, 65)}
         {/* Legs */}
-        <line x1="110" y1="115" x2="125" y2="130" className="figure-body" />
+        {LIMB(104, 108, 120, 135)}
+        {LIMB(110, 108, 126, 135)}
       </g>
-      <line x1="15" y1="140" x2="130" y2="140" stroke="var(--text-muted)" strokeWidth="2" />
     </svg>
   );
 }
@@ -212,20 +267,20 @@ function PushUpRotation() {
 function SidePlank() {
   return (
     <svg viewBox="0 0 140 170">
-      <g className="side-plank-figure">
-        {/* Head */}
-        <circle cx="40" cy="70" r="12" className="figure-head" />
-        {/* Body - angled */}
-        <line x1="40" y1="82" x2="90" y2="128" className="figure-body" />
+      <GROUND y={148} />
+      <g className="sidepl-body">
+        {HEAD(38, 62)}
+        {/* Torso angled */}
+        <rect x="38" y="72" width="16" height="58" rx="8"
+          fill="var(--figure-fill)" transform="rotate(-25, 55, 100)" />
         {/* Support arm */}
-        <line x1="40" y1="88" x2="55" y2="128" className="figure-body" />
-        {/* Top arm - reaching up */}
-        <line x1="50" y1="90" x2="30" y2="60" className="figure-body" />
+        {LIMB(48, 88, 58, 140)}
+        {/* Top arm reaching up */}
+        {LIMB(42, 82, 24, 52)}
         {/* Legs */}
-        <line x1="90" y1="128" x2="110" y2="135" className="figure-body" />
+        {LIMB(80, 128, 105, 140, 10)}
+        {LIMB(85, 132, 110, 142, 10)}
       </g>
-      {/* Ground */}
-      <line x1="15" y1="140" x2="130" y2="140" stroke="var(--text-muted)" strokeWidth="2" />
     </svg>
   );
 }
