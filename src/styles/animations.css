@@ -1,0 +1,185 @@
+/* ---- Exercise Animations ---- */
+.exercise-animation {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exercise-animation svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Stick figure base styles */
+.figure-head {
+  fill: none;
+  stroke: var(--text-primary);
+  stroke-width: 3;
+}
+
+.figure-body {
+  stroke: var(--text-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* ---- Jumping Jacks ---- */
+@keyframes jj-arms {
+  0%, 100% { d: path("M50 75 L70 95"); }
+  50% { d: path("M50 75 L30 55"); }
+}
+
+@keyframes jj-arms-r {
+  0%, 100% { d: path("M90 75 L70 95"); }
+  50% { d: path("M90 75 L110 55"); }
+}
+
+@keyframes jj-legs {
+  0%, 100% { d: path("M60 115 L70 150"); }
+  50% { d: path("M60 115 L40 150"); }
+}
+
+@keyframes jj-legs-r {
+  0%, 100% { d: path("M80 115 L70 150"); }
+  50% { d: path("M80 115 L100 150"); }
+}
+
+.jj-arm-l { animation: jj-arms 0.8s ease-in-out infinite; }
+.jj-arm-r { animation: jj-arms-r 0.8s ease-in-out infinite; }
+.jj-leg-l { animation: jj-legs 0.8s ease-in-out infinite; }
+.jj-leg-r { animation: jj-legs-r 0.8s ease-in-out infinite; }
+
+/* ---- Wall Sit ---- */
+@keyframes wall-sit-tremble {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+.wall-sit-figure {
+  animation: wall-sit-tremble 0.3s ease-in-out infinite;
+}
+
+/* ---- Push-Ups ---- */
+@keyframes pushup-body {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(12px) rotate(2deg); }
+}
+
+.pushup-figure {
+  transform-origin: 110px 120px;
+  animation: pushup-body 1.5s ease-in-out infinite;
+}
+
+/* ---- Crunches ---- */
+@keyframes crunch-upper {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-30deg); }
+}
+
+.crunch-upper {
+  transform-origin: 70px 110px;
+  animation: crunch-upper 1.5s ease-in-out infinite;
+}
+
+/* ---- Step-Ups ---- */
+@keyframes stepup-body {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.stepup-figure {
+  animation: stepup-body 1.2s ease-in-out infinite;
+}
+
+/* ---- Squats ---- */
+@keyframes squat-body {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(20px); }
+}
+
+.squat-figure {
+  animation: squat-body 1.5s ease-in-out infinite;
+}
+
+/* ---- Tricep Dips ---- */
+@keyframes dip-body {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(15px); }
+}
+
+.dip-figure {
+  animation: dip-body 1.5s ease-in-out infinite;
+}
+
+/* ---- Plank ---- */
+@keyframes plank-hold {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+.plank-figure {
+  animation: plank-hold 2s ease-in-out infinite;
+}
+
+/* ---- High Knees ---- */
+@keyframes highknee-l {
+  0%, 100% { d: path("M60 115 L55 150"); }
+  50% { d: path("M60 115 L55 95"); }
+}
+
+@keyframes highknee-r {
+  0%, 50% { d: path("M80 115 L85 95"); }
+  100% { d: path("M80 115 L85 150"); }
+}
+
+@keyframes highknee-arm-l {
+  0%, 100% { d: path("M55 75 L40 90"); }
+  50% { d: path("M55 75 L40 65"); }
+}
+
+@keyframes highknee-arm-r {
+  0%, 50% { d: path("M85 75 L100 65"); }
+  100% { d: path("M85 75 L100 90"); }
+}
+
+.hk-leg-l { animation: highknee-l 0.5s ease-in-out infinite; }
+.hk-leg-r { animation: highknee-r 0.5s ease-in-out infinite; }
+.hk-arm-l { animation: highknee-arm-l 0.5s ease-in-out infinite; }
+.hk-arm-r { animation: highknee-arm-r 0.5s ease-in-out infinite; }
+
+/* ---- Lunges ---- */
+@keyframes lunge-body {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(15px) translateX(5px); }
+}
+
+.lunge-figure {
+  animation: lunge-body 1.5s ease-in-out infinite;
+}
+
+/* ---- Push-Up Rotation ---- */
+@keyframes pushup-rot {
+  0%, 30% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(12px) rotate(2deg); }
+  70%, 100% { transform: translateY(0) rotate(-15deg); }
+}
+
+.pushup-rot-figure {
+  transform-origin: 70px 120px;
+  animation: pushup-rot 2s ease-in-out infinite;
+}
+
+/* ---- Side Plank ---- */
+@keyframes side-plank-hold {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2deg); }
+}
+
+.side-plank-figure {
+  transform-origin: 70px 140px;
+  animation: side-plank-hold 2s ease-in-out infinite;
+}

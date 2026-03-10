@@ -1,0 +1,86 @@
+[
+  {
+    "id": "jumping-jacks",
+    "name": "Jumping Jacks",
+    "description": "Stand with feet together, arms at sides. Jump while spreading legs and raising arms overhead. Return to start.",
+    "category": "cardio",
+    "muscles": ["full-body"]
+  },
+  {
+    "id": "wall-sit",
+    "name": "Wall Sit",
+    "description": "Lean against a wall with knees bent at 90 degrees, as if sitting in an invisible chair. Hold the position.",
+    "category": "strength",
+    "muscles": ["quads", "glutes"]
+  },
+  {
+    "id": "push-ups",
+    "name": "Push-Ups",
+    "description": "Start in plank position, hands shoulder-width apart. Lower chest to floor, then push back up.",
+    "category": "strength",
+    "muscles": ["chest", "triceps", "shoulders"]
+  },
+  {
+    "id": "crunches",
+    "name": "Abdominal Crunches",
+    "description": "Lie on your back, knees bent. Curl your shoulders toward your knees, engaging your abs. Lower back down.",
+    "category": "strength",
+    "muscles": ["abs"]
+  },
+  {
+    "id": "step-ups",
+    "name": "Step-Ups",
+    "description": "Step onto a sturdy chair or bench with one foot, drive up to standing, then step back down. Alternate legs.",
+    "category": "strength",
+    "muscles": ["quads", "glutes"]
+  },
+  {
+    "id": "squats",
+    "name": "Squats",
+    "description": "Stand with feet shoulder-width apart. Lower your hips back and down as if sitting. Return to standing.",
+    "category": "strength",
+    "muscles": ["quads", "glutes", "hamstrings"]
+  },
+  {
+    "id": "tricep-dips",
+    "name": "Tricep Dips",
+    "description": "Place hands on a chair behind you, fingers forward. Lower your body by bending elbows, then push back up.",
+    "category": "strength",
+    "muscles": ["triceps", "shoulders"]
+  },
+  {
+    "id": "plank",
+    "name": "Plank",
+    "description": "Hold a push-up position with arms straight (or on forearms). Keep body in a straight line from head to heels.",
+    "category": "strength",
+    "muscles": ["core", "shoulders"]
+  },
+  {
+    "id": "high-knees",
+    "name": "High Knees",
+    "description": "Run in place, driving knees up toward chest as high as possible. Pump arms for momentum.",
+    "category": "cardio",
+    "muscles": ["full-body"]
+  },
+  {
+    "id": "lunges",
+    "name": "Lunges",
+    "description": "Step forward with one leg, lowering until both knees are at 90 degrees. Push back to start. Alternate legs.",
+    "category": "strength",
+    "muscles": ["quads", "glutes", "hamstrings"]
+  },
+  {
+    "id": "push-up-rotation",
+    "name": "Push-Up with Rotation",
+    "description": "Do a push-up, then rotate to one side, extending that arm to the ceiling. Return and repeat on the other side.",
+    "category": "strength",
+    "muscles": ["chest", "core", "shoulders"]
+  },
+  {
+    "id": "side-plank",
+    "name": "Side Plank",
+    "description": "Lie on one side, prop yourself up on your forearm. Keep body in a straight line. Hold, then switch sides.",
+    "category": "strength",
+    "muscles": ["obliques", "core"]
+  }
+]

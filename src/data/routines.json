@@ -1,0 +1,24 @@
+[
+  {
+    "id": "7-minute-hiit",
+    "name": "7-Minute HIIT",
+    "description": "The classic scientific 7-minute workout. 12 high-intensity exercises using only body weight and a chair.",
+    "category": "hiit",
+    "workDuration": 30,
+    "restDuration": 10,
+    "exercises": [
+      "jumping-jacks",
+      "wall-sit",
+      "push-ups",
+      "crunches",
+      "step-ups",
+      "squats",
+      "tricep-dips",
+      "plank",
+      "high-knees",
+      "lunges",
+      "push-up-rotation",
+      "side-plank"
+    ]
+  }
+]
