@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import exercises from '../data/exercises.json';
 import useTimer from '../hooks/useTimer';
-import ExerciseAvatar from './ExerciseAvatar';
+import ExerciseAnimation from './ExerciseAnimation';
 
 const exerciseMap = Object.fromEntries(exercises.map((e) => [e.id, e]));
 
@@ -72,7 +72,7 @@ export default function Workout({ routine, onComplete, onQuit }) {
       <div className="workout">
         <p className="workout-phase">Get Ready</p>
         <p className="exercise-name">{currentExercise?.name}</p>
-        <ExerciseAvatar exerciseId={currentExerciseId} />
+        <ExerciseAnimation exerciseId={currentExerciseId} />
         <p className={`timer-display${seconds <= 1 ? ' warning' : ''}`}>{seconds}</p>
         <p className="exercise-description">{currentExercise?.description}</p>
       </div>
@@ -91,7 +91,7 @@ export default function Workout({ routine, onComplete, onQuit }) {
           : currentExercise?.name}
       </p>
 
-      <ExerciseAvatar
+      <ExerciseAnimation
         exerciseId={
           phase === 'rest' && exerciseIndex < totalExercises - 1
             ? routine.exercises[exerciseIndex + 1]
