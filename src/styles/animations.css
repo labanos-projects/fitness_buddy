@@ -7,6 +7,18 @@
   justify-content: center;
 }
 
+.exercise-animation.three {
+  border-radius: 18px;
+  overflow: hidden;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.5));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.exercise-animation.three canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* ---- Placeholder (shown until Rive file is ready) ---- */
 .exercise-animation.placeholder {
   background: rgba(255, 255, 255, 0.03);
