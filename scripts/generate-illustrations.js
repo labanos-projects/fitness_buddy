@@ -31,9 +31,75 @@ if (!API_TOKEN)      { console.error('❌ API_TOKEN required'); process.exit(1);
 const exercisesPath = join(__dirname, '..', 'src', 'data', 'exercises.json');
 const exercises = JSON.parse(readFileSync(exercisesPath, 'utf-8'));
 
+// ── Frame analysis ───────────────────────────────────────────────────────────
+async function analyzeFrameCount(exerciseName, description) {
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.5-flash',
+    generationConfig: {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: 'object',
+        properties: {
+          frame_count: { type: 'integer', description: 'Number of key positions (1-3)' },
+          positions: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Brief description of each key position',
+          },
+        },
+        required: ['frame_count', 'positions'],
+      },
+      temperature: 0.1,
+      maxOutputTokens: 1024,
+    },
+  });
+
+  const prompt = `For the exercise "${exerciseName}", determine how many key positions are needed to clearly illustrate the movement.
+
+Description: ${description}
+
+Rules:
+- Static holds (plank, wall sit, child's pose) = 1 position
+- Simple two-phase movements (squats, lunges, crunches) = 2 positions  
+- Complex multi-phase movements (push-up with rotation, burpees, cat-cow flow) = 3 positions
+- Never more than 3`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    // .text() on the SDK response already filters out thinking parts
+    let text;
+    try {
+      text = result.response.text();
+    } catch {
+      const parts = result.response.candidates?.[0]?.content?.parts || [];
+      text = (parts.find(p => !p.thought) || parts[parts.length - 1])?.text || '';
+    }
+    const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+    // Try direct parse, then extract JSON object from text
+    let parsed;
+    try { parsed = JSON.parse(cleaned); } catch {
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      parsed = match ? JSON.parse(match[0]) : null;
+      if (!parsed) throw new Error('No JSON found in response');
+    }
+    return {
+      frame_count: Math.min(Math.max(parsed.frame_count || 2, 1), 3),
+      positions: parsed.positions || [],
+    };
+  } catch (err) {
+    console.warn(`     ⚠️  Analysis failed (${err.message}), defaulting to 2 frames`);
+    return { frame_count: 2, positions: [] };
+  }
+}
+
 // ── Prompt template ──────────────────────────────────────────────────────────
-function buildPrompt(exerciseName, description, frameCount = 2) {
-  return `Flat vector illustration of a female figure performing ${exerciseName}, shown in ${frameCount} key positions side by side on a white background. The figure has a simple, minimal design with solid color fills (teal/cyan sports bra and dark gray/navy leggings), no facial details, light skin tone, brown hair in a ponytail. Clean geometric body proportions, no outlines, soft flat shading. The poses should clearly demonstrate the start and end positions of the movement. Fitness app UI style, consistent character design across all poses. No text, no background elements, no shadows on the ground.
+function buildPrompt(exerciseName, description, frameCount, positions) {
+  const positionText = positions?.length
+    ? `The ${frameCount} key position(s) to show: ${positions.join(', ')}.`
+    : `Show ${frameCount} key position(s) of the movement.`;
+
+  return `Flat vector illustration of a female figure performing ${exerciseName}, shown in ${frameCount} key position${frameCount > 1 ? 's side by side' : ''} on a white background. The figure has a simple, minimal design with solid color fills (teal/cyan sports bra and dark gray/navy leggings), no facial details, light skin tone, brown hair in a ponytail. Clean geometric body proportions, no outlines, soft flat shading. ${positionText} Fitness app UI style, consistent character design across all poses. No text, no background elements, no shadows on the ground.
 
 Exercise description for pose accuracy: ${description}`;
 }
@@ -106,34 +172,50 @@ async function uploadFrame(exerciseId, frameNumber, base64Data, mimeType, prompt
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 async function main() {
-  const targetId = process.argv[2];
+  const args = process.argv.slice(2);
+  const regenerate = args.includes('--regenerate');
+  const targetId = args.find(a => !a.startsWith('--'));
 
   const existing = await getExistingIllustrations();
   console.log(`📦 ${existing.length} exercises already have illustrations`);
 
-  const toGenerate = targetId
-    ? exercises.filter(e => e.id === targetId)
-    : exercises.filter(e => !existing.includes(e.id));
+  let toGenerate;
+  if (targetId) {
+    toGenerate = exercises.filter(e => e.id === targetId);
+  } else if (regenerate) {
+    toGenerate = [...exercises];
+  } else {
+    toGenerate = exercises.filter(e => !existing.includes(e.id));
+  }
 
   if (toGenerate.length === 0) {
     console.log('✅ Nothing to generate — all exercises have illustrations');
+    console.log('   Use --regenerate to overwrite existing ones');
     return;
   }
 
   console.log(`🎨 Generating illustrations for ${toGenerate.length} exercises...\n`);
 
   for (const exercise of toGenerate) {
-    const frameCount = 2; // start + end position
-    const prompt = buildPrompt(exercise.name, exercise.description, frameCount);
-
     console.log(`  🖌️  ${exercise.name} (${exercise.id})...`);
 
     try {
+      // Step 1: Analyze how many frames this exercise needs
+      console.log(`     → Analyzing movement complexity...`);
+      const analysis = await analyzeFrameCount(exercise.name, exercise.description);
+      const frameCount = Math.min(Math.max(analysis.frame_count || 2, 1), 3);
+      const positions = analysis.positions || [];
+      console.log(`     → ${frameCount} position(s): ${positions.join(' → ')}`);
+
+      // Rate limit between analysis and generation
+      await new Promise(r => setTimeout(r, 1000));
+
+      // Step 2: Generate the illustration with the right frame count
+      const prompt = buildPrompt(exercise.name, exercise.description, frameCount, positions);
       const images = await generateImage(prompt);
       console.log(`     → Got ${images.length} image(s) from Gemini`);
 
-      // If we got a single image with multiple poses side-by-side, store as frame 1
-      // If we got multiple images, store each as a separate frame
+      // Upload frames
       for (let i = 0; i < images.length; i++) {
         await uploadFrame(
           exercise.id,
@@ -147,9 +229,9 @@ async function main() {
 
       console.log(`  ✅ ${exercise.name} done\n`);
 
-      // Rate limit: wait 2s between exercises
+      // Rate limit: wait 3s between exercises
       if (toGenerate.indexOf(exercise) < toGenerate.length - 1) {
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 3000));
       }
     } catch (err) {
       console.error(`  ❌ ${exercise.name}: ${err.message}\n`);
