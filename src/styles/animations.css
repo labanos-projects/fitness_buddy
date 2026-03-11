@@ -134,3 +134,129 @@
   50% { transform: rotate(-2deg); }
 }
 .sidepl-body { transform-origin: 90px 140px; animation: sidepl-sway 2.5s ease-in-out infinite; }
+
+/* Yoga Poses */
+@keyframes catcow-flow {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+.catcow-body { transform-origin: 70px 120px; animation: catcow-flow 3s ease-in-out infinite; }
+
+@keyframes downdog-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.downdog-body { transform-origin: 70px 110px; animation: downdog-breathe 2.8s ease-in-out infinite; }
+
+@keyframes warrior-sway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
+}
+.warrior-body { transform-origin: 70px 120px; animation: warrior-sway 4s ease-in-out infinite; }
+
+@keyframes child-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+.childpose-body { transform-origin: 70px 120px; animation: child-breathe 4.5s ease-in-out infinite; }
+
+@keyframes forwardfold-flow {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(4deg); }
+}
+.forwardfold-body { transform-origin: 90px 120px; animation: forwardfold-flow 3.5s ease-in-out infinite; }
+
+/* Illustration prototypes */
+.exercise-illustration {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.illustration-card {
+  width: 100%;
+  max-width: 420px;
+  background: #f5efff;
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 12px 24px rgba(55, 35, 100, 0.15);
+}
+
+.illustration-header p {
+  margin: 0;
+  color: #8c7cbf;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.illustration-header h3 {
+  margin: 4px 0 0;
+  font-size: 1.2rem;
+  color: #2a1b3f;
+}
+
+.illustration-frames {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+}
+
+.illustration-frame {
+  position: relative;
+  flex: 1;
+  min-width: 120px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(108, 92, 229, 0.1);
+}
+
+.illustration-frame .step-label {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #c3b7f5;
+}
+
+.illustration-svg {
+  width: 100px;
+  height: 100px;
+}
+
+/* DB-sourced illustrations (Nano Banana) */
+.db-illustration {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.db-illustration-frames {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px;
+}
+
+.db-illustration-frame {
+  flex-shrink: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.db-illustration-frame img {
+  display: block;
+  max-height: 200px;
+  width: auto;
+  object-fit: contain;
+}

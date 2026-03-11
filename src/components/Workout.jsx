@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import exercises from '../data/exercises.json';
 import useTimer from '../hooks/useTimer';
+import useAudioCue from '../hooks/useAudioCue';
+import useSpeech from '../hooks/useSpeech';
 import ExerciseAnimation from './ExerciseAnimation';
 
 const exerciseMap = Object.fromEntries(exercises.map((e) => [e.id, e]));
@@ -9,7 +11,11 @@ export default function Workout({ routine, onComplete, onQuit }) {
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [phase, setPhase] = useState('ready'); // ready | work | rest | done
   const { seconds, isRunning, start, pause, resume, stop } = useTimer();
+  const { playCountdownTick, playPhaseTransition } = useAudioCue();
+  const { speak } = useSpeech();
   const [paused, setPaused] = useState(false);
+  const prevSecondsRef = useRef(seconds);
+  const prevPhaseRef = useRef(null);
 
   const currentExerciseId = routine.exercises[exerciseIndex];
   const currentExercise = exerciseMap[currentExerciseId];
@@ -49,6 +55,50 @@ export default function Workout({ routine, onComplete, onQuit }) {
       });
     }
   }, []);
+
+  useEffect(() => {
+    const prevSeconds = prevSecondsRef.current;
+
+    if (seconds > 0 && seconds <= 3 && prevSeconds > seconds) {
+      playCountdownTick();
+    }
+
+    if (seconds === 0 && prevSeconds > 0) {
+      playPhaseTransition();
+    }
+
+    prevSecondsRef.current = seconds;
+  }, [seconds, playCountdownTick, playPhaseTransition]);
+
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current;
+
+    if (phase === 'ready' && phase !== prevPhase && currentExercise?.name) {
+      speak(`Get ready for ${currentExercise.name}`);
+    }
+
+    if (phase === 'work' && phase !== prevPhase && currentExercise?.name) {
+      speak(`Start ${currentExercise.name}`);
+    }
+
+    if (
+      phase === 'rest' &&
+      phase !== prevPhase &&
+      exerciseIndex < totalExercises - 1
+    ) {
+      const nextExerciseId = routine.exercises[exerciseIndex + 1];
+      const nextExercise = exerciseMap[nextExerciseId];
+      if (nextExercise?.name) {
+        speak(`Next: ${nextExercise.name}`);
+      }
+    }
+
+    if (phase === 'done' && phase !== prevPhase) {
+      speak('Workout complete. Nice job.');
+    }
+
+    prevPhaseRef.current = phase;
+  }, [phase, currentExercise?.name, exerciseIndex, totalExercises, routine, speak]);
 
   const handlePause = () => {
     if (paused) {

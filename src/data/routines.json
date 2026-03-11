@@ -20,5 +20,75 @@
       "push-up-rotation",
       "side-plank"
     ]
+  },
+  {
+    "id": "core-reset",
+    "name": "Core Reset Express",
+    "description": "Focused core session that alternates holds and dynamic moves to wake up your midline in under 10 minutes.",
+    "category": "core",
+    "workDuration": 35,
+    "restDuration": 15,
+    "exercises": [
+      "plank",
+      "crunches",
+      "push-up-rotation",
+      "side-plank",
+      "plank",
+      "crunches",
+      "push-up-rotation",
+      "side-plank"
+    ]
+  },
+  {
+    "id": "lower-body-burn",
+    "name": "Lower Body Burn",
+    "description": "Glutes, quads, and hamstrings on repeat with isometric holds and unilateral work for balance.",
+    "category": "strength",
+    "workDuration": 40,
+    "restDuration": 20,
+    "exercises": [
+      "squats",
+      "lunges",
+      "step-ups",
+      "wall-sit",
+      "squats",
+      "lunges",
+      "step-ups",
+      "wall-sit"
+    ]
+  },
+  {
+    "id": "cardio-power-ladder",
+    "name": "Cardio Power Ladder",
+    "description": "Fast-paced combo of plyometrics and planks to spike your heart rate with minimal space required.",
+    "category": "cardio",
+    "workDuration": 30,
+    "restDuration": 15,
+    "exercises": [
+      "jumping-jacks",
+      "high-knees",
+      "push-ups",
+      "plank",
+      "jumping-jacks",
+      "high-knees",
+      "push-up-rotation",
+      "plank"
+    ]
+  },
+  {
+    "id": "gentle-yoga-flow",
+    "name": "Gentle Yoga Flow",
+    "description": "A calming sequence of floor poses, hips-openers, and slow breath work to reset between tougher sessions.",
+    "category": "yoga",
+    "workDuration": 45,
+    "restDuration": 15,
+    "exercises": [
+      "childs-pose",
+      "cat-cow",
+      "downward-dog",
+      "warrior-ii",
+      "seated-forward-fold",
+      "childs-pose"
+    ]
   }
 ]

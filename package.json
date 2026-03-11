@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:art": "node scripts/generate-illustrations.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@rive-app/react-canvas": "^4.27.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

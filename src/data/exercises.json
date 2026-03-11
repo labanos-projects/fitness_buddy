@@ -82,5 +82,40 @@
     "description": "Lie on one side, prop yourself up on your forearm. Keep body in a straight line. Hold, then switch sides.",
     "category": "strength",
     "muscles": ["obliques", "core"]
+  },
+  {
+    "id": "cat-cow",
+    "name": "Cat-Cow Flow",
+    "description": "On hands and knees, alternate between arching your spine up (cat) and dropping your belly while lifting your chest (cow).",
+    "category": "yoga",
+    "muscles": ["spine", "core"]
+  },
+  {
+    "id": "downward-dog",
+    "name": "Downward Dog",
+    "description": "From hands-and-feet, lift hips high creating an inverted V. Press through palms and lengthen hamstrings.",
+    "category": "yoga",
+    "muscles": ["hamstrings", "shoulders", "back"]
+  },
+  {
+    "id": "warrior-ii",
+    "name": "Warrior II",
+    "description": "Step feet wide, bend the front knee, extend arms long at shoulder height, and gaze over the front hand.",
+    "category": "yoga",
+    "muscles": ["legs", "hips", "shoulders"]
+  },
+  {
+    "id": "childs-pose",
+    "name": "Child's Pose",
+    "description": "Kneel, sit hips back toward heels, and stretch arms forward while resting the forehead on the mat.",
+    "category": "yoga",
+    "muscles": ["back", "hips"]
+  },
+  {
+    "id": "seated-forward-fold",
+    "name": "Seated Forward Fold",
+    "description": "Sit tall with legs extended, hinge at the hips, and fold forward reaching toward feet while keeping spine long.",
+    "category": "yoga",
+    "muscles": ["hamstrings", "back"]
   }
 ]

@@ -1,0 +1,37 @@
+name: Deploy illustrations.php to labanos.dk
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'php/illustrations.php'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject DB credentials
+        run: |
+          sed -i "s|%%DB_HOST%%|${{ secrets.DB_HOST }}|g" php/illustrations.php
+          sed -i "s|%%DB_NAME%%|${{ secrets.DB_NAME }}|g" php/illustrations.php
+          sed -i "s|%%DB_USER%%|${{ secrets.DB_USER }}|g" php/illustrations.php
+          sed -i "s|%%DB_PASS%%|${{ secrets.DB_PASS }}|g" php/illustrations.php
+
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Deploy via SFTP
+        run: |
+          sshpass -p "${{ secrets.SFTP_PASS }}" sftp \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -P ${{ secrets.SFTP_PORT }} \
+            "${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}" <<'SFTP'
+          put php/illustrations.php illustrations.php
+          SFTP
+
+      - name: Done
+        run: echo "✅ illustrations.php deployed to labanos.dk"
