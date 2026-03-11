@@ -1,6 +1,6 @@
 import routines from '../data/routines.json';
 
-export default function Home({ onStartRoutine }) {
+export default function Home({ onStartRoutine, onOpenLibrary }) {
   return (
     <div className="home">
       <div>
@@ -27,6 +27,10 @@ export default function Home({ onStartRoutine }) {
           </div>
         );
       })}
+
+      <button className="btn btn-secondary" onClick={onOpenLibrary}>
+        📖 Exercise Library
+      </button>
     </div>
   );
 }

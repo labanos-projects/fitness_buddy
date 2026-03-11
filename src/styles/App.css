@@ -205,3 +205,96 @@ body {
   color: var(--text-secondary);
   font-size: 1.1rem;
 }
+
+/* ---- Library Screen ---- */
+.library {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.library-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.library-header h1 {
+  font-size: 1.8rem;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.library-header p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.library-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: 2rem;
+}
+
+.library-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.library-card-illustration {
+  flex-shrink: 0;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.library-card-illustration .exercise-animation,
+.library-card-illustration .exercise-illustration,
+.library-card-illustration .db-illustration {
+  width: 120px;
+  height: auto;
+}
+
+.library-card-illustration .db-illustration-frame img {
+  max-height: 100px;
+}
+
+.library-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.library-card-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.library-tag {
+  display: inline-block;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  text-transform: capitalize;
+  margin-bottom: 0.5rem;
+}
+
+.library-card-info p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.btn-small {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+}
