@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk/fitnessbuddy';
 const cache = {};
+
+export function clearCache(exerciseId) {
+  if (exerciseId) delete cache[exerciseId];
+  else Object.keys(cache).forEach((k) => delete cache[k]);
+}
 
 export default function useIllustrations(exerciseId) {
   const [frames, setFrames] = useState(cache[exerciseId]?.frames || null);
@@ -19,8 +24,8 @@ export default function useIllustrations(exerciseId) {
     setLoading(true);
 
     fetch(`${API_BASE}/illustrations.php?exercise_id=${encodeURIComponent(exerciseId)}`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
         if (cancelled) return;
         const f = data?.frames?.length ? data.frames : null;
         cache[exerciseId] = { frames: f };
@@ -35,7 +40,9 @@ export default function useIllustrations(exerciseId) {
         }
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [exerciseId]);
 
   return { frames, loading };

@@ -9,7 +9,7 @@
 // Environment variables:
 //   GEMINI_API_KEY  — Google AI API key
 //   API_TOKEN       — Bearer token for the illustrations PHP endpoint
-//   API_BASE        — Base URL for PHP backend (default: https://labanos.dk)
+//   API_BASE        — Base URL for PHP backend (default: https://labanos.dk/fitnessbuddy)
 //   GEMINI_MODEL    — Model to use (default: gemini-2.0-flash-exp)
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -21,7 +21,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const API_TOKEN      = process.env.API_TOKEN;
-const API_BASE       = process.env.API_BASE || 'https://labanos.dk';
+const API_BASE       = process.env.API_BASE || 'https://labanos.dk/fitnessbuddy';
 const GEMINI_MODEL   = process.env.GEMINI_MODEL || 'gemini-2.5-flash-image';
 
 if (!GEMINI_API_KEY) { console.error('❌ GEMINI_API_KEY required'); process.exit(1); }

@@ -1,10 +1,11 @@
-name: Deploy illustrations.php to labanos.dk
+name: Deploy fitness buddy PHP endpoints
 
 on:
   push:
     branches: [main]
     paths:
-      - 'php/illustrations.php'
+      - 'php/*.php'
+      - '.github/workflows/deploy-php.yml'
 
 jobs:
   deploy:
@@ -15,13 +16,31 @@ jobs:
 
       - name: Inject DB credentials
         run: |
-          sed -i "s|%%DB_HOST%%|${{ secrets.DB_HOST }}|g" php/illustrations.php
-          sed -i "s|%%DB_NAME%%|${{ secrets.DB_NAME }}|g" php/illustrations.php
-          sed -i "s|%%DB_USER%%|${{ secrets.DB_USER }}|g" php/illustrations.php
-          sed -i "s|%%DB_PASS%%|${{ secrets.DB_PASS }}|g" php/illustrations.php
+          for file in php/illustrations.php php/regenerate.php; do
+            sed -i "s|%%DB_HOST%%|${{ secrets.DB_HOST }}|g" "$file"
+            sed -i "s|%%DB_NAME%%|${{ secrets.DB_NAME }}|g" "$file"
+            sed -i "s|%%DB_USER%%|${{ secrets.DB_USER }}|g" "$file"
+            sed -i "s|%%DB_PASS%%|${{ secrets.DB_PASS }}|g" "$file"
+          done
+
+      - name: Create Gemini config
+        run: |
+          cat <<'PHP' > php/config.local.php
+          <?php
+          define('GEMINI_API_KEY', '${{ secrets.GEMINI_API_KEY }}');
+          PHP
 
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
+
+      - name: Ensure remote directory
+        run: |
+          sshpass -p "${{ secrets.SFTP_PASS }}" ssh \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -p ${{ secrets.SFTP_PORT }} \
+            "${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}" \
+            "mkdir -p fitnessbuddy"
 
       - name: Deploy via SFTP
         run: |
@@ -30,8 +49,12 @@ jobs:
             -o UserKnownHostsFile=/dev/null \
             -P ${{ secrets.SFTP_PORT }} \
             "${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}" <<'SFTP'
+          cd fitnessbuddy
           put php/illustrations.php illustrations.php
+          put php/regenerate.php regenerate.php
+          put php/fb_auth_check.php fb_auth_check.php
+          put php/config.local.php config.local.php
           SFTP
 
       - name: Done
-        run: echo "✅ illustrations.php deployed to labanos.dk"
+        run: echo "✅ fitnessbuddy PHP endpoints deployed"

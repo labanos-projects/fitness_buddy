@@ -28,7 +28,7 @@ try {
     exit;
 }
 
-require_once __DIR__ . '/auth_check.php';
+require_once __DIR__ . '/fb_auth_check.php';
 
 // ── Schema (idempotent) ──────────────────────────────────────────────────────
 $pdo->exec("CREATE TABLE IF NOT EXISTS exercise_illustrations (
@@ -57,7 +57,7 @@ if ($method === 'GET') {
     if ($exerciseId) {
         // Return all frames for a specific exercise
         $stmt = $pdo->prepare(
-            "SELECT exercise_id, frame_number, image_base64, mime_type, created_at
+            "SELECT exercise_id, frame_number, image_base64, mime_type, prompt_used, created_at
              FROM exercise_illustrations
              WHERE exercise_id = ?
              ORDER BY frame_number ASC"
