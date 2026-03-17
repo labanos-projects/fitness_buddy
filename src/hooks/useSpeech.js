@@ -18,6 +18,17 @@ export default function useSpeech() {
       utterance.rate = rate;
       utterance.pitch = pitch;
       utterance.volume = volume;
+
+      // Force English output regardless of browser locale
+      const voices = synth.getVoices?.() ?? [];
+      const englishVoice = voices.find((voice) => voice.lang?.toLowerCase().startsWith('en'));
+      if (englishVoice) {
+        utterance.voice = englishVoice;
+        utterance.lang = englishVoice.lang;
+      } else {
+        utterance.lang = 'en-US';
+      }
+
       synth.speak(utterance);
     } catch (err) {
       console.warn('Speech synthesis failed', err);
