@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk/fitnessbuddy';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
 const TOKEN_KEY = 'fb_auth_token';
 
 const AuthContext = createContext(null);

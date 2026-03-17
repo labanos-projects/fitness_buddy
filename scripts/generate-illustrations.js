@@ -9,7 +9,7 @@
 // Environment variables:
 //   GEMINI_API_KEY  — Google AI API key
 //   API_TOKEN       — Bearer token for the illustrations PHP endpoint
-//   API_BASE        — Base URL for PHP backend (default: https://labanos.dk/fitnessbuddy)
+//   API_BASE        — Base URL for PHP backend (default: https://labanos.dk)
 //   GEMINI_MODEL    — Model to use (default: gemini-2.0-flash-exp)
 
 import { GoogleGenerativeAI } from '@google/generative-ai';

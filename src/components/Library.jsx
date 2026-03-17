@@ -5,7 +5,7 @@ import LoginModal from './LoginModal';
 import useAuth from '../hooks/useAuth';
 import useIllustrations, { clearCache } from '../hooks/useIllustrations';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk/fitnessbuddy';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
 const sorted = [...exercises].sort((a, b) => a.name.localeCompare(b.name));
 
 function EditPanel({ exerciseId, token, onRegenerated }) {

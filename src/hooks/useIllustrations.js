@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk/fitnessbuddy';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
 const cache = {};
 
 export function clearCache(exerciseId) {
