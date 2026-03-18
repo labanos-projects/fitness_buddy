@@ -461,6 +461,8 @@ function RiveExercise({ exerciseId }) {
   return <RiveComponent role="img" aria-label={`${exerciseId} animation`} />;
 }
 
+const IMG_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
+
 function DbIllustration({ exerciseId }) {
   const { frames } = useIllustrations(exerciseId);
 
@@ -469,14 +471,18 @@ function DbIllustration({ exerciseId }) {
   return (
     <div className="db-illustration">
       <div className="db-illustration-frames">
-        {frames.map((frame, idx) => (
-          <div className="db-illustration-frame" key={idx}>
-            <img
-              src={`data:${frame.mime_type};base64,${frame.image_base64}`}
-              alt={`${exerciseId} frame ${frame.frame_number}`}
-            />
-          </div>
-        ))}
+        {frames.map((frame, idx) => {
+          const v = frame.updated_at ? new Date(frame.updated_at).getTime() : '';
+          return (
+            <div className="db-illustration-frame" key={idx}>
+              <img
+                src={`${IMG_BASE}/image.php?exercise_id=${encodeURIComponent(exerciseId)}&frame=${frame.frame_number}&v=${v}`}
+                alt={`${exerciseId} frame ${frame.frame_number}`}
+                loading="lazy"
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

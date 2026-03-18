@@ -44,6 +44,7 @@ jobs:
           put php/regenerate.php regenerate.php
           put php/fb_auth_check.php fb_auth_check.php
           put php/models.php models.php
+          put php/image.php image.php
           put php/config.local.php config.local.php
           SFTP
 

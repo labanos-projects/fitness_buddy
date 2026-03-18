@@ -50,21 +50,42 @@ if ($method === 'POST' && isset($_GET['_method'])) {
     if ($override === 'DELETE') $method = 'DELETE';
 }
 
+$metaOnly = isset($_GET['meta']) && $_GET['meta'] == '1';
+
 // ── GET ──────────────────────────────────────────────────────────────────────
 if ($method === 'GET') {
     $exerciseId = trim($_GET['exercise_id'] ?? '');
 
     if ($exerciseId) {
-        // Return all frames for a specific exercise
-        $stmt = $pdo->prepare(
-            "SELECT exercise_id, frame_number, image_base64, mime_type, prompt_used, created_at
-             FROM exercise_illustrations
-             WHERE exercise_id = ?
-             ORDER BY frame_number ASC"
-        );
-        $stmt->execute([$exerciseId]);
-        $frames = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(['exercise_id' => $exerciseId, 'frames' => $frames]);
+        if ($metaOnly) {
+            $stmt = $pdo->prepare(
+                "SELECT exercise_id, frame_number, mime_type, prompt_used, updated_at
+                 FROM exercise_illustrations
+                 WHERE exercise_id = ?
+                 ORDER BY frame_number ASC"
+            );
+            $stmt->execute([$exerciseId]);
+            $frames = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $prompt = $frames[0]['prompt_used'] ?? '';
+            foreach ($frames as &$frame) {
+                unset($frame['prompt_used']);
+            }
+            echo json_encode([
+                'exercise_id' => $exerciseId,
+                'prompt_used' => $prompt,
+                'frames' => $frames,
+            ]);
+        } else {
+            $stmt = $pdo->prepare(
+                "SELECT exercise_id, frame_number, image_base64, mime_type, prompt_used, created_at
+                 FROM exercise_illustrations
+                 WHERE exercise_id = ?
+                 ORDER BY frame_number ASC"
+            );
+            $stmt->execute([$exerciseId]);
+            $frames = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode(['exercise_id' => $exerciseId, 'frames' => $frames]);
+        }
     } else {
         // Return list of exercises that have illustrations
         $stmt = $pdo->query(

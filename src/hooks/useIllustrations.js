@@ -2,20 +2,26 @@ import { useState, useEffect } from 'react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
 const cache = {};
+const pending = {};
 
 export function clearCache(exerciseId) {
-  if (exerciseId) delete cache[exerciseId];
-  else Object.keys(cache).forEach((k) => delete cache[k]);
+  if (exerciseId) {
+    delete cache[exerciseId];
+    delete pending[exerciseId];
+  } else {
+    Object.keys(cache).forEach((k) => delete cache[k]);
+    Object.keys(pending).forEach((k) => delete pending[k]);
+  }
 }
 
 export default function useIllustrations(exerciseId) {
-  const [frames, setFrames] = useState(cache[exerciseId]?.frames || null);
+  const [data, setData] = useState(cache[exerciseId] || { frames: null, prompt: '' });
   const [loading, setLoading] = useState(!cache[exerciseId]);
 
   useEffect(() => {
     if (!exerciseId) return;
     if (cache[exerciseId]) {
-      setFrames(cache[exerciseId].frames);
+      setData(cache[exerciseId]);
       setLoading(false);
       return;
     }
@@ -23,27 +29,33 @@ export default function useIllustrations(exerciseId) {
     let cancelled = false;
     setLoading(true);
 
-    fetch(`${API_BASE}/illustrations.php?exercise_id=${encodeURIComponent(exerciseId)}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (cancelled) return;
-        const f = data?.frames?.length ? data.frames : null;
-        cache[exerciseId] = { frames: f };
-        setFrames(f);
-        setLoading(false);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          cache[exerciseId] = { frames: null };
-          setFrames(null);
-          setLoading(false);
-        }
-      });
+    if (!pending[exerciseId]) {
+      pending[exerciseId] = fetch(
+        `${API_BASE}/illustrations.php?exercise_id=${encodeURIComponent(exerciseId)}&meta=1`,
+      )
+        .then((res) => (res.ok ? res.json() : null))
+        .then((payload) => {
+          const frames = payload?.frames?.length ? payload.frames : null;
+          const result = { frames, prompt: payload?.prompt_used || '' };
+          cache[exerciseId] = result;
+          return result;
+        })
+        .catch(() => ({ frames: null, prompt: '' }))
+        .finally(() => {
+          delete pending[exerciseId];
+        });
+    }
+
+    pending[exerciseId].then((result) => {
+      if (cancelled) return;
+      setData(result);
+      setLoading(false);
+    });
 
     return () => {
       cancelled = true;
     };
   }, [exerciseId]);
 
-  return { frames, loading };
+  return { frames: data.frames, prompt: data.prompt, loading };
 }

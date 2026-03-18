@@ -37,8 +37,7 @@ function useModels(token) {
 }
 
 function EditPanel({ exerciseId, token, onRegenerated }) {
-  const { frames } = useIllustrations(exerciseId);
-  const currentPrompt = frames?.[0]?.prompt_used || '';
+  const { prompt: currentPrompt } = useIllustrations(exerciseId);
   const { models } = useModels(token);
 
   const [expanded, setExpanded] = useState(false);
