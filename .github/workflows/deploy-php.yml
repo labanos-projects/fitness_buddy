@@ -14,9 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject DB credentials
+      - name: Inject DB credentials into all PHP files
         run: |
-          for file in php/illustrations.php php/regenerate.php; do
+          for file in php/*.php; do
             sed -i "s|%%DB_HOST%%|${{ secrets.DB_HOST }}|g" "$file"
             sed -i "s|%%DB_NAME%%|${{ secrets.DB_NAME }}|g" "$file"
             sed -i "s|%%DB_USER%%|${{ secrets.DB_USER }}|g" "$file"
@@ -33,23 +33,13 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
 
-      - name: Ensure remote directory
-        run: |
-          sshpass -p "${{ secrets.SFTP_PASS }}" ssh \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            -p ${{ secrets.SFTP_PORT }} \
-            "${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}" \
-            "mkdir -p fitnessbuddy"
-
-      - name: Deploy via SFTP
+      - name: Deploy to site root via SFTP
         run: |
           sshpass -p "${{ secrets.SFTP_PASS }}" sftp \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             -P ${{ secrets.SFTP_PORT }} \
             "${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}" <<'SFTP'
-          cd fitnessbuddy
           put php/illustrations.php illustrations.php
           put php/regenerate.php regenerate.php
           put php/fb_auth_check.php fb_auth_check.php
@@ -58,4 +48,4 @@ jobs:
           SFTP
 
       - name: Done
-        run: echo "✅ fitnessbuddy PHP endpoints deployed"
+        run: echo "✅ PHP endpoints deployed to labanos.dk root"
