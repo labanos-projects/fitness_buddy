@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import exercises from '../data/exercises.json';
 import ExerciseAnimation from './ExerciseAnimation';
 import LoginModal from './LoginModal';
@@ -8,12 +8,42 @@ import useIllustrations, { clearCache } from '../hooks/useIllustrations';
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
 const sorted = [...exercises].sort((a, b) => a.name.localeCompare(b.name));
 
+// Cache models list across all EditPanels
+let modelsCache = null;
+
+function useModels(token) {
+  const [models, setModels] = useState(modelsCache?.models || []);
+  const [loading, setLoading] = useState(!modelsCache);
+
+  useEffect(() => {
+    if (!token || modelsCache) {
+      setLoading(false);
+      return;
+    }
+    fetch(`${API_BASE}/models.php`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const m = data?.models || [];
+        modelsCache = { models: m };
+        setModels(m);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  return { models, loading };
+}
+
 function EditPanel({ exerciseId, token, onRegenerated }) {
   const { frames } = useIllustrations(exerciseId);
   const currentPrompt = frames?.[0]?.prompt_used || '';
+  const { models } = useModels(token);
 
   const [expanded, setExpanded] = useState(false);
   const [prompt, setPrompt] = useState('');
+  const [model, setModel] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -30,13 +60,19 @@ function EditPanel({ exerciseId, token, onRegenerated }) {
     setBusy(true);
     setError('');
     try {
+      const body = {
+        exercise_id: exerciseId,
+        prompt: prompt.trim(),
+      };
+      if (model) body.model = model;
+
       const res = await fetch(`${API_BASE}/regenerate.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ exercise_id: exerciseId, prompt: prompt.trim() }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -65,6 +101,22 @@ function EditPanel({ exerciseId, token, onRegenerated }) {
             rows={8}
             placeholder={currentPrompt ? 'Update the prompt…' : 'Describe the illustration…'}
           />
+          <div className="edit-model-row">
+            <label htmlFor={`model-${exerciseId}`}>Model:</label>
+            <select
+              id={`model-${exerciseId}`}
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              className="edit-model-select"
+            >
+              <option value="">Default (gemini-2.5-flash-image)</option>
+              {models.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.id}
+                </option>
+              ))}
+            </select>
+          </div>
           <p className="edit-hint">
             Standard character style (teal top, dark leggings, ponytail, flat vector) is auto-appended.
           </p>

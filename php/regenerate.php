@@ -44,7 +44,7 @@ if (!defined('GEMINI_API_KEY')) {
     else { http_response_code(500); echo json_encode(['error' => 'Gemini API key not configured']); exit; }
 }
 
-$GEMINI_MODEL = 'gemini-2.5-flash-image';
+$GEMINI_MODEL_DEFAULT = 'gemini-2.5-flash-image';
 
 // ─── Standard style suffix ───────────────────────────────────────────────────
 $STYLE_SUFFIX = "The figure has a simple, minimal design with solid color fills (teal/cyan sports bra and dark gray/navy leggings), no facial details, light skin tone, brown hair in a ponytail. Clean geometric body proportions, no outlines, soft flat shading. Fitness app UI style, consistent character design across all poses. No text, no background elements, no shadows on the ground.";
@@ -53,8 +53,9 @@ $STYLE_SUFFIX = "The figure has a simple, minimal design with solid color fills 
 $data = json_decode(file_get_contents('php://input'), true);
 if (!$data) { http_response_code(400); echo json_encode(['error' => 'Invalid JSON']); exit; }
 
-$exerciseId = trim($data['exercise_id'] ?? '');
-$prompt     = trim($data['prompt'] ?? '');
+$exerciseId  = trim($data['exercise_id'] ?? '');
+$prompt      = trim($data['prompt'] ?? '');
+$GEMINI_MODEL = trim($data['model'] ?? '') ?: $GEMINI_MODEL_DEFAULT;
 
 if (!$exerciseId || !$prompt) {
     http_response_code(400); echo json_encode(['error' => 'exercise_id and prompt required']); exit;
