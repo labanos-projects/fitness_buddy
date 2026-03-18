@@ -66,6 +66,11 @@ if (stripos($prompt, 'teal') === false && stripos($prompt, 'sports bra') === fal
     $prompt .= "\n\n" . $STYLE_SUFFIX;
 }
 
+// Ensure size instruction is present
+if (stripos($prompt, '1024') === false && stripos($prompt, 'square') === false) {
+    $prompt .= "\n\nOutput a square 1024x1024 pixel image.";
+}
+
 // ─── Call Gemini API ─────────────────────────────────────────────────────────
 $url = "https://generativelanguage.googleapis.com/v1beta/models/{$GEMINI_MODEL}:generateContent?key=" . GEMINI_API_KEY;
 

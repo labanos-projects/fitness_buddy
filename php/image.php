@@ -72,20 +72,27 @@ if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']
     exit;
 }
 
-// Compress if PNG and GD is available
-if ($mimeType === 'image/png' && function_exists('imagecreatefrompng')) {
+// Compress and normalize size if GD is available
+if (function_exists('imagecreatefromstring')) {
     $img = @imagecreatefromstring($imageData);
     if ($img) {
-        // Resize if wider than 800px
         $w = imagesx($img);
         $h = imagesy($img);
-        $maxW = 800;
-        if ($w > $maxW) {
-            $newH = (int)($h * $maxW / $w);
-            $resized = imagecreatetruecolor($maxW, $newH);
+        $maxDim = 1024;
+
+        // Resize if either dimension exceeds max
+        if ($w > $maxDim || $h > $maxDim) {
+            if ($w >= $h) {
+                $newW = $maxDim;
+                $newH = (int)($h * $maxDim / $w);
+            } else {
+                $newH = $maxDim;
+                $newW = (int)($w * $maxDim / $h);
+            }
+            $resized = imagecreatetruecolor($newW, $newH);
             imagealphablending($resized, false);
             imagesavealpha($resized, true);
-            imagecopyresampled($resized, $img, 0, 0, 0, 0, $maxW, $newH, $w, $h);
+            imagecopyresampled($resized, $img, 0, 0, 0, 0, $newW, $newH, $w, $h);
             imagedestroy($img);
             $img = $resized;
         }
@@ -94,6 +101,7 @@ if ($mimeType === 'image/png' && function_exists('imagecreatefrompng')) {
         ob_start();
         imagepng($img, null, 9);
         $imageData = ob_get_clean();
+        $mimeType = 'image/png';
         imagedestroy($img);
     }
 }
