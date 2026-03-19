@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRive } from '@rive-app/react-canvas';
 import useIllustrations from '../hooks/useIllustrations';
 import '../styles/animations.css';
@@ -32,16 +32,6 @@ const ILLUSTRATION_COLORS = {
 
 const formatLabel = (id) => id.replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
 
-let riveAvailabilityPromise;
-const checkRiveAvailability = () => {
-  if (!riveAvailabilityPromise) {
-    riveAvailabilityPromise = fetch(RIVE_SRC, { method: 'HEAD' })
-      .then((res) => res.ok)
-      .catch(() => false);
-  }
-  return riveAvailabilityPromise;
-};
-
 const HEAD = (cx, cy, r = 11) => <circle cx={cx} cy={cy} r={r} fill="var(--figure-fill)" />;
 const TORSO = (x, y, w = 20, h = 38) => (
   <rect x={x} y={y} width={w} height={h} rx={w / 2} fill="var(--figure-fill)" />
@@ -50,9 +40,6 @@ const LIMB = (x1, y1, x2, y2, w = 10) => (
   <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--figure-fill)" strokeWidth={w} strokeLinecap="round" />
 );
 const GROUND = (y = 158) => <ellipse cx="70" cy={y} rx="50" ry="4" fill="var(--ground-color)" />;
-
-// SVG animation components (same as earlier build)
-// ... (omitted comments for brevity)
 
 function JumpingJacks() {
   return (
@@ -489,20 +476,12 @@ function DbIllustration({ exerciseId }) {
 }
 
 export default function ExerciseAnimation({ exerciseId }) {
-  const [riveReady, setRiveReady] = useState(null);
+  // Rive file (fitness-buddy.riv) does not exist yet — skip the HEAD check
+  // and keep riveReady as false so we fall through to SVG animations.
+  const riveReady = false;
   const { frames: dbFrames, loading: dbLoading } = useIllustrations(exerciseId);
 
-  useEffect(() => {
-    let mounted = true;
-    checkRiveAvailability().then((hasFile) => {
-      if (mounted) setRiveReady(hasFile);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // Priority 1: DB illustrations (from Gemini / Nano Banana)
+  // Priority 1: DB illustrations (from Gemini / auto-illustrate)
   if (dbFrames && dbFrames.length > 0) {
     return (
       <div className="exercise-illustration">
@@ -526,7 +505,7 @@ export default function ExerciseAnimation({ exerciseId }) {
     );
   }
 
-  // Priority 3: Rive
+  // Priority 3: Rive (disabled until fitness-buddy.riv is added to public/)
   const canUseRive = riveReady && riveCapableExercises.has(exerciseId);
   if (canUseRive) {
     return (
