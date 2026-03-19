@@ -42,6 +42,7 @@ jobs:
             "${{ secrets.SFTP_USER }}@${{ secrets.SFTP_HOST }}" <<'SFTP'
           put php/illustrations.php illustrations.php
           put php/regenerate.php regenerate.php
+          put php/auto-illustrate.php auto-illustrate.php
           put php/fb_auth_check.php fb_auth_check.php
           put php/models.php models.php
           put php/image.php image.php
