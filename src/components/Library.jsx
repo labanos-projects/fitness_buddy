@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import exercises from '../data/exercises.json';
+import builtInExercises from '../data/exercises.json';
 import ExerciseAnimation from './ExerciseAnimation';
 import LoginModal from './LoginModal';
 import useAuth from '../hooks/useAuth';
 import useIllustrations, { clearCache } from '../hooks/useIllustrations';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
-const sorted = [...exercises].sort((a, b) => a.name.localeCompare(b.name));
+const sorted = [...builtInExercises].sort((a, b) => a.name.localeCompare(b.name));
 
 // Cache models list across all EditPanels
 let modelsCache = null;
@@ -135,29 +135,41 @@ function EditPanel({ exerciseId, token, onRegenerated }) {
   );
 }
 
-function LibraryCard({ exercise, user }) {
+function LibraryCard({ exercise, user, isGenerated = false }) {
   const [version, setVersion] = useState(0);
-
   const handleRefreshed = () => setVersion((v) => v + 1);
 
   return (
-    <div className="library-card">
+    <div className={`library-card${isGenerated ? ' library-card-generated' : ''}`}>
       <div className="library-card-illustration">
         <ExerciseAnimation key={`${exercise.id}-${version}`} exerciseId={exercise.id} />
       </div>
       <div className="library-card-info">
         <h3>{exercise.name}</h3>
-        <span className="library-tag">{exercise.category}</span>
+        <span className={`library-tag${isGenerated ? ' library-tag-new' : ''}`}>
+          {isGenerated ? '✨ ' : ''}{exercise.category}
+        </span>
         <p>{exercise.description}</p>
-        {user && <EditPanel exerciseId={exercise.id} token={user.token} onRegenerated={handleRefreshed} />}
+        {exercise.muscles?.length > 0 && (
+          <p className="library-muscles">
+            {Array.isArray(exercise.muscles)
+              ? exercise.muscles.join(', ')
+              : exercise.muscles}
+          </p>
+        )}
+        {user && !isGenerated && (
+          <EditPanel exerciseId={exercise.id} token={user.token} onRegenerated={handleRefreshed} />
+        )}
       </div>
     </div>
   );
 }
 
-export default function Library({ onBack }) {
+export default function Library({ onBack, customExercises = [] }) {
   const { user, logout } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
+
+  const totalCount = sorted.length + customExercises.length;
 
   return (
     <div className="library">
@@ -166,7 +178,7 @@ export default function Library({ onBack }) {
           ← Back
         </button>
         <h1>Exercise Library</h1>
-        <p>{sorted.length} exercises</p>
+        <p>{totalCount} exercises</p>
         <div className="library-auth">
           {user ? (
             <>
@@ -188,6 +200,20 @@ export default function Library({ onBack }) {
           <LibraryCard key={exercise.id} exercise={exercise} user={user} />
         ))}
       </div>
+
+      {customExercises.length > 0 && (
+        <>
+          <div className="library-section-header">
+            <h2>✨ Generated Exercises</h2>
+            <p>{customExercises.length} AI-invented</p>
+          </div>
+          <div className="library-list">
+            {customExercises.map((exercise) => (
+              <LibraryCard key={exercise.id} exercise={exercise} user={user} isGenerated />
+            ))}
+          </div>
+        </>
+      )}
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </div>
