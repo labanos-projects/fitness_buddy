@@ -40,9 +40,12 @@ function pick_text_model($apiKey) {
     foreach (json_decode($resp, true)['models'] ?? [] as $m) {
         $id = preg_replace('/^models\//', '', $m['name'] ?? '');
         if (!in_array('generateContent', $m['supportedGenerationMethods'] ?? [])) continue;
-        if (stripos($id, 'image') !== false) continue;
-        // Skip thinking/experimental models that may not return plain text
+        if (stripos($id, 'image')    !== false) continue;
         if (stripos($id, 'thinking') !== false) continue;
+        if (stripos($id, 'tts')      !== false) continue;
+        if (stripos($id, 'computer') !== false) continue;
+        if (stripos($id, 'research') !== false) continue;
+        if (stripos($id, 'robotics') !== false) continue;
         $candidates[] = $id;
     }
     if (empty($candidates)) return [null, []];
@@ -113,7 +116,7 @@ $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generat
 
 $payload = [
     'contents' => [['parts' => [['text' => $fullPrompt]]]],
-    'generationConfig' => ['temperature' => 0.7, 'maxOutputTokens' => 1024],
+    'generationConfig' => ['temperature' => 0.7, 'maxOutputTokens' => 2048],
 ];
 
 $ch = curl_init($url);
@@ -144,14 +147,12 @@ $candidate = $result['candidates'][0] ?? null;
 $text      = $candidate['content']['parts'][0]['text'] ?? '';
 
 if (empty($text)) {
-    // Dump the full Gemini response so we can diagnose the structure
     http_response_code(500);
     echo json_encode([
-        'error'          => 'Empty text from Gemini',
-        'model'          => $model,
-        'all_candidates' => $allCandidates,
-        'finish_reason'  => $candidate['finishReason'] ?? null,
-        'gemini_raw'     => $result,
+        'error'         => 'Empty text from Gemini',
+        'model'         => $model,
+        'finish_reason' => $candidate['finishReason'] ?? null,
+        'gemini_raw'    => $result,
     ]);
     exit;
 }
@@ -161,12 +162,7 @@ $end   = strrpos($text, '}');
 
 if ($start === false || $end === false || $end <= $start) {
     http_response_code(500);
-    echo json_encode([
-        'error'          => 'No JSON object in AI response',
-        'model'          => $model,
-        'all_candidates' => $allCandidates,
-        'raw'            => $text,
-    ]);
+    echo json_encode(['error' => 'No JSON object in AI response', 'model' => $model, 'raw' => $text]);
     exit;
 }
 
