@@ -46,6 +46,7 @@ jobs:
           put php/models.php models.php
           put php/image.php image.php
           put php/config.local.php config.local.php
+          put php/compose-workout.php compose-workout.php
           SFTP
 
       - name: Done

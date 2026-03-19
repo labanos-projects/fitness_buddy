@@ -1,6 +1,6 @@
 import routines from '../data/routines.json';
 
-export default function Home({ onStartRoutine, onOpenLibrary }) {
+export default function Home({ onStartRoutine, onOpenLibrary, onOpenComposer }) {
   return (
     <div className="home">
       <div>
@@ -27,6 +27,10 @@ export default function Home({ onStartRoutine, onOpenLibrary }) {
           </div>
         );
       })}
+
+      <button className="btn btn-accent" onClick={onOpenComposer}>
+        ✨ AI Workout Composer
+      </button>
 
       <button className="btn btn-secondary" onClick={onOpenLibrary}>
         📖 Exercise Library
