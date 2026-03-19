@@ -1,6 +1,6 @@
 <?php
 // ─── AI Workout Composer ─────────────────────────────────────────────────────
-// POST { prompt } → returns a structured workout JSON
+// POST { prompt } → returns a structured workout JSON (may include newExercises)
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -50,15 +50,11 @@ function pick_text_model($apiKey) {
 
     usort($candidates, function($a, $b) {
         $score = function($id) {
-            // Major version number drives the base score
             preg_match('/gemini-(\d+)/', $id, $m);
             $major   = isset($m[1]) ? (int)$m[1] : 0;
-            // Flash models are fast and reliable for structured output
             $flash   = stripos($id, 'flash')   !== false ?  2 : 0;
-            // Strongly penalise preview/experimental — they have output limits
             $preview = (stripos($id, 'preview') !== false ||
                         stripos($id, 'exp')     !== false) ? -20 : 0;
-            // Slight penalty for lite (less capable)
             $lite    = stripos($id, 'lite')    !== false ? -1 : 0;
             return $major * 10 + $flash + $preview + $lite;
         };
@@ -75,8 +71,8 @@ if (!$model) {
     exit;
 }
 
-// ─── Exercise library ────────────────────────────────────────────────────────
-$exercises = [
+// ─── Built-in exercise library ───────────────────────────────────────────────
+$builtInExercises = [
     ['id' => 'jumping-jacks',       'name' => 'Jumping Jacks',          'category' => 'cardio',   'muscles' => 'full-body'],
     ['id' => 'wall-sit',            'name' => 'Wall Sit',               'category' => 'strength', 'muscles' => 'quads, glutes'],
     ['id' => 'push-ups',            'name' => 'Push-Ups',               'category' => 'strength', 'muscles' => 'chest, triceps, shoulders'],
@@ -96,28 +92,38 @@ $exercises = [
     ['id' => 'seated-forward-fold', 'name' => 'Seated Forward Fold',    'category' => 'yoga',     'muscles' => 'hamstrings, back'],
 ];
 
+$builtInIds = array_column($builtInExercises, 'id');
+
 $exerciseLines = implode("\n", array_map(
     fn($e) => "- {$e['id']} ({$e['category']}): {$e['name']}, targets {$e['muscles']}",
-    $exercises
+    $builtInExercises
 ));
 
 $fullPrompt = <<<PROMPT
 You are a fitness program designer. Create a workout routine based on this request: "{$userPrompt}"
 
-Available exercises (use only these IDs):
+Known exercises (prefer these, use their exact IDs):
 {$exerciseLines}
 
 Rules:
-- Use only the exercise IDs listed above
-- Include 4-16 exercises (repetition is fine)
+- Prefer exercises from the known list above
+- You MAY invent NEW exercises if the request calls for movements not covered above
+- For each NEW exercise, add an entry to "newExercises" with:
+    - id: kebab-case, unique, not matching any known ID above
+    - name: display name (max 50 chars)
+    - description: 1-2 sentences on how to perform it
+    - category: one of "cardio", "strength", or "yoga"
+    - muscles: JSON array of target muscle group strings
+- Include 4-16 exercises total (repetition is fine)
 - workDuration and restDuration are in seconds
 - Yoga: work 30-60s, rest 10-15s
 - HIIT: work 20-40s, rest 5-15s
 - Strength: work 30-45s, rest 15-20s
 - Match the requested duration as closely as possible
+- If all exercises are from the known list, set "newExercises" to []
 
 Respond with ONLY valid JSON and nothing else:
-{"name":"...","description":"...","category":"hiit|yoga|strength|cardio|core","workDuration":30,"restDuration":10,"exercises":["id1","id2"]}
+{"name":"...","description":"...","category":"hiit|yoga|strength|cardio|core","workDuration":30,"restDuration":10,"exercises":["id1","id2"],"newExercises":[{"id":"new-ex","name":"New Exercise","description":"How to do it.","category":"strength","muscles":["core","abs"]}]}
 PROMPT;
 
 // ─── Call Gemini API ─────────────────────────────────────────────────────────
@@ -128,8 +134,6 @@ $payload = [
     'generationConfig' => [
         'temperature'     => 0.7,
         'maxOutputTokens' => 8192,
-        // Disable thinking tokens so the full budget goes to JSON output.
-        // Ignored by non-thinking models, safe to send unconditionally.
         'thinkingConfig'  => ['thinkingBudget' => 0],
     ],
 ];
@@ -190,10 +194,41 @@ if (!$workout || !isset($workout['exercises']) || !is_array($workout['exercises'
     exit;
 }
 
-// ─── Validate & sanitise ──────────────────────────────────────────────────────────
-$validIds = array_column($exercises, 'id');
+// ─── Validate & sanitise new exercises ───────────────────────────────────────
+$sanitisedNew = [];
+$newExIds     = [];
+
+foreach ($workout['newExercises'] ?? [] as $ne) {
+    // Sanitise ID: lowercase kebab-case only
+    $neId = preg_replace('/[^a-z0-9\-]/', '-', strtolower(trim($ne['id'] ?? '')));
+    $neId = preg_replace('/-+/', '-', trim($neId, '-'));
+
+    if (!$neId) continue;
+    if (in_array($neId, $builtInIds, true)) continue;   // don't shadow built-ins
+    if (in_array($neId, $newExIds,   true)) continue;   // no duplicates
+
+    $validCategories = ['cardio', 'strength', 'yoga'];
+    $cat = in_array($ne['category'] ?? '', $validCategories, true) ? $ne['category'] : 'strength';
+
+    $muscles = [];
+    foreach ((array)($ne['muscles'] ?? []) as $m) {
+        $muscles[] = substr(strip_tags((string)$m), 0, 40);
+    }
+
+    $sanitisedNew[] = [
+        'id'          => $neId,
+        'name'        => substr(strip_tags(trim($ne['name']        ?? $neId)), 0, 80),
+        'description' => substr(strip_tags(trim($ne['description'] ?? '')),    0, 400),
+        'category'    => $cat,
+        'muscles'     => array_slice($muscles, 0, 8),
+    ];
+    $newExIds[] = $neId;
+}
+
+// ─── Validate exercise list (built-ins + newly invented) ────────────────────
+$allValidIds = array_merge($builtInIds, $newExIds);
 $workout['exercises'] = array_values(
-    array_filter($workout['exercises'], fn($id) => in_array($id, $validIds, true))
+    array_filter($workout['exercises'], fn($id) => in_array($id, $allValidIds, true))
 );
 
 if (empty($workout['exercises'])) {
@@ -204,6 +239,7 @@ if (empty($workout['exercises'])) {
 
 $workout['workDuration'] = max(10, min(120, intval($workout['workDuration'] ?? 30)));
 $workout['restDuration'] = max(5,  min(60,  intval($workout['restDuration']  ?? 10)));
+$workout['newExercises'] = $sanitisedNew;
 $workout['_model']       = $model;
 
 echo json_encode($workout);
