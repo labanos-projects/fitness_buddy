@@ -1,13 +1,18 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import exercises from '../data/exercises.json';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import builtInExercises from '../data/exercises.json';
 import useTimer from '../hooks/useTimer';
 import useAudioCue from '../hooks/useAudioCue';
 import useSpeech from '../hooks/useSpeech';
 import ExerciseAnimation from './ExerciseAnimation';
 
-const exerciseMap = Object.fromEntries(exercises.map((e) => [e.id, e]));
+export default function Workout({ routine, onComplete, onQuit, customExercises = [] }) {
+  // Merge built-in exercises with any AI-generated custom ones
+  const exerciseMap = useMemo(() => {
+    const map = Object.fromEntries(builtInExercises.map(e => [e.id, e]));
+    customExercises.forEach(e => { if (!map[e.id]) map[e.id] = e; });
+    return map;
+  }, [customExercises]);
 
-export default function Workout({ routine, onComplete, onQuit }) {
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [phase, setPhase] = useState('ready'); // ready | work | rest | done
   const { seconds, isRunning, start, pause, resume, stop } = useTimer();
@@ -121,7 +126,7 @@ export default function Workout({ routine, onComplete, onQuit }) {
     return (
       <div className="workout">
         <p className="workout-phase">Get Ready</p>
-        <p className="exercise-name">{currentExercise?.name}</p>
+        <p className="exercise-name">{currentExercise?.name || currentExerciseId}</p>
         <ExerciseAnimation exerciseId={currentExerciseId} />
         <p className={`timer-display${seconds <= 1 ? ' warning' : ''}`}>{seconds}</p>
         <p className="exercise-description">{currentExercise?.description}</p>
@@ -137,8 +142,8 @@ export default function Workout({ routine, onComplete, onQuit }) {
 
       <p className="exercise-name">
         {phase === 'rest' && exerciseIndex < totalExercises - 1
-          ? `Next: ${exerciseMap[routine.exercises[exerciseIndex + 1]]?.name}`
-          : currentExercise?.name}
+          ? `Next: ${exerciseMap[routine.exercises[exerciseIndex + 1]]?.name || routine.exercises[exerciseIndex + 1]}`
+          : (currentExercise?.name || currentExerciseId)}
       </p>
 
       <ExerciseAnimation
