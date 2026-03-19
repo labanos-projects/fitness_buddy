@@ -40,6 +40,7 @@ function pick_text_model($apiKey) {
     foreach (json_decode($resp, true)['models'] ?? [] as $m) {
         $id = preg_replace('/^models\//', '', $m['name'] ?? '');
         if (!in_array('generateContent', $m['supportedGenerationMethods'] ?? [])) continue;
+        // Skip specialised / non-text models
         foreach (['image','thinking','tts','computer','research','robotics','nano','banana'] as $skip) {
             if (stripos($id, $skip) !== false) continue 2;
         }
@@ -49,16 +50,17 @@ function pick_text_model($apiKey) {
 
     usort($candidates, function($a, $b) {
         $score = function($id) {
-            preg_match('/gemini-(\d+)(?:\.(\d+))?/', $id, $m);
+            // Major version number drives the base score
+            preg_match('/gemini-(\d+)/', $id, $m);
             $major   = isset($m[1]) ? (int)$m[1] : 0;
-            $minor   = isset($m[2]) ? (int)$m[2] : 0;
+            // Flash models are fast and reliable for structured output
             $flash   = stripos($id, 'flash')   !== false ?  2 : 0;
+            // Strongly penalise preview/experimental — they have output limits
             $preview = (stripos($id, 'preview') !== false ||
                         stripos($id, 'exp')     !== false) ? -20 : 0;
+            // Slight penalty for lite (less capable)
             $lite    = stripos($id, 'lite')    !== false ? -1 : 0;
-            // Prefer x.0 over x.5: minor version 5 may indicate a thinking model
-            $minorPenalty = ($minor === 5) ? -2 : 0;
-            return $major * 10 + $flash + $preview + $lite + $minorPenalty;
+            return $major * 10 + $flash + $preview + $lite;
         };
         return $score($b) - $score($a);
     });
@@ -124,11 +126,11 @@ $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generat
 $payload = [
     'contents' => [['parts' => [['text' => $fullPrompt]]]],
     'generationConfig' => [
-        'temperature'    => 0.7,
-        'maxOutputTokens'=> 8192,
-        // Disable thinking tokens so the full budget goes to the JSON output.
-        // Ignored by non-thinking models, so safe to send unconditionally.
-        'thinkingConfig' => ['thinkingBudget' => 0],
+        'temperature'     => 0.7,
+        'maxOutputTokens' => 8192,
+        // Disable thinking tokens so the full budget goes to JSON output.
+        // Ignored by non-thinking models, safe to send unconditionally.
+        'thinkingConfig'  => ['thinkingBudget' => 0],
     ],
 ];
 
