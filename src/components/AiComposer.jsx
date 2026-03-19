@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://labanos.dk';
+
 const EXAMPLE_PROMPTS = [
   '20 min yoga for lower back pain',
   'Quick 10 min HIIT before work',
@@ -19,7 +21,7 @@ export default function AiComposer({ onStartRoutine, onBack }) {
     setError(null);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE}/compose-workout.php`, {
+      const res = await fetch(`${API_BASE}/compose-workout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: trimmed }),
