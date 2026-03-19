@@ -31,6 +31,48 @@ if (strlen($userPrompt) > 500) {
     http_response_code(400); echo json_encode(['error' => 'prompt too long']); exit;
 }
 
+// ─── Discover best available text model (same source of truth as models.php) ───
+function pick_text_model($apiKey) {
+    $url = "https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}&pageSize=100";
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10]);
+    $resp = curl_exec($ch);
+    curl_close($ch);
+
+    $allModels = json_decode($resp, true)['models'] ?? [];
+
+    $candidates = [];
+    foreach ($allModels as $m) {
+        $id      = preg_replace('/^models\//', '', $m['name'] ?? '');
+        $methods = $m['supportedGenerationMethods'] ?? [];
+        // Must support generateContent and must NOT be an image-only model
+        if (!in_array('generateContent', $methods)) continue;
+        if (stripos($id, 'image') !== false)            continue;
+        $candidates[] = $id;
+    }
+
+    if (empty($candidates)) return null;
+
+    // Prefer newer / flash models: gemini-2.x-flash first, then gemini-1.x-flash, then anything
+    usort($candidates, function($a, $b) {
+        $score = function($id) {
+            if (preg_match('/gemini-(\d+)/', $id, $m)) $ver = (int)$m[1]; else $ver = 0;
+            $flash = stripos($id, 'flash') !== false ? 1 : 0;
+            return $ver * 10 + $flash;
+        };
+        return $score($b) - $score($a); // descending
+    });
+
+    return $candidates[0];
+}
+
+$model = pick_text_model(GEMINI_API_KEY);
+if (!$model) {
+    http_response_code(500);
+    echo json_encode(['error' => 'No suitable text generation model found on this API key']);
+    exit;
+}
+
 // ─── Exercise library ────────────────────────────────────────────────────────
 $exercises = [
     ['id' => 'jumping-jacks',       'name' => 'Jumping Jacks',          'category' => 'cardio',   'muscles' => 'full-body'],
@@ -78,8 +120,7 @@ Respond with ONLY valid JSON, no explanation, no markdown:
 PROMPT;
 
 // ─── Call Gemini API ─────────────────────────────────────────────────────────
-$model = 'gemini-1.5-flash';
-$url   = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . GEMINI_API_KEY;
+$url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . GEMINI_API_KEY;
 
 $payload = [
     'contents' => [
@@ -109,7 +150,7 @@ if ($curlErr) {
 }
 if ($httpCode !== 200) {
     http_response_code(502);
-    echo json_encode(['error' => 'Gemini returned HTTP ' . $httpCode, 'detail' => json_decode($response, true)]);
+    echo json_encode(['error' => 'Gemini returned HTTP ' . $httpCode, 'model' => $model, 'detail' => json_decode($response, true)]);
     exit;
 }
 
@@ -141,5 +182,8 @@ if (empty($workout['exercises'])) {
 // Clamp durations to sane ranges
 $workout['workDuration'] = max(10, min(120, intval($workout['workDuration'] ?? 30)));
 $workout['restDuration'] = max(5,  min(60,  intval($workout['restDuration']  ?? 10)));
+
+// Include which model was used (handy for debugging)
+$workout['_model'] = $model;
 
 echo json_encode($workout);
