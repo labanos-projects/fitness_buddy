@@ -157,7 +157,8 @@ function LibraryCard({ exercise, user, isGenerated = false }) {
               : exercise.muscles}
           </p>
         )}
-        {user && !isGenerated && (
+        {/* EditPanel for all exercises when logged in — generated ones included */}
+        {user && (
           <EditPanel exerciseId={exercise.id} token={user.token} onRegenerated={handleRefreshed} />
         )}
       </div>
