@@ -31,38 +31,29 @@ if (strlen($userPrompt) > 500) {
     http_response_code(400); echo json_encode(['error' => 'prompt too long']); exit;
 }
 
-// ─── Discover best available text model (same source of truth as models.php) ───
+// ─── Discover best available text model ─────────────────────────────────────
 function pick_text_model($apiKey) {
     $url = "https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}&pageSize=100";
-    $ch = curl_init($url);
+    $ch  = curl_init($url);
     curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10]);
     $resp = curl_exec($ch);
     curl_close($ch);
 
-    $allModels = json_decode($resp, true)['models'] ?? [];
-
     $candidates = [];
-    foreach ($allModels as $m) {
-        $id      = preg_replace('/^models\//', '', $m['name'] ?? '');
-        $methods = $m['supportedGenerationMethods'] ?? [];
-        // Must support generateContent and must NOT be an image-only model
-        if (!in_array('generateContent', $methods)) continue;
-        if (stripos($id, 'image') !== false)            continue;
+    foreach (json_decode($resp, true)['models'] ?? [] as $m) {
+        $id = preg_replace('/^models\//', '', $m['name'] ?? '');
+        if (!in_array('generateContent', $m['supportedGenerationMethods'] ?? [])) continue;
+        if (stripos($id, 'image') !== false) continue;
         $candidates[] = $id;
     }
-
     if (empty($candidates)) return null;
 
-    // Prefer newer / flash models: gemini-2.x-flash first, then gemini-1.x-flash, then anything
     usort($candidates, function($a, $b) {
-        $score = function($id) {
-            if (preg_match('/gemini-(\d+)/', $id, $m)) $ver = (int)$m[1]; else $ver = 0;
-            $flash = stripos($id, 'flash') !== false ? 1 : 0;
-            return $ver * 10 + $flash;
-        };
-        return $score($b) - $score($a); // descending
+        $score = fn($id) =>
+            (preg_match('/gemini-(\d+)/', $id, $m) ? (int)$m[1] : 0) * 10
+            + (stripos($id, 'flash') !== false ? 1 : 0);
+        return $score($b) - $score($a);
     });
-
     return $candidates[0];
 }
 
@@ -115,7 +106,7 @@ Rules:
 - Strength: work 30-45s, rest 15-20s
 - Match the requested duration as closely as possible
 
-Respond with ONLY valid JSON, no explanation, no markdown:
+Respond with ONLY valid JSON and nothing else:
 {"name":"...","description":"...","category":"hiit|yoga|strength|cardio|core","workDuration":30,"restDuration":10,"exercises":["id1","id2"]}
 PROMPT;
 
@@ -123,13 +114,8 @@ PROMPT;
 $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . GEMINI_API_KEY;
 
 $payload = [
-    'contents' => [
-        ['parts' => [['text' => $fullPrompt]]]
-    ],
-    'generationConfig' => [
-        'temperature'     => 0.7,
-        'maxOutputTokens' => 1024,
-    ],
+    'contents' => [['parts' => [['text' => $fullPrompt]]]],
+    'generationConfig' => ['temperature' => 0.7, 'maxOutputTokens' => 1024],
 ];
 
 $ch = curl_init($url);
@@ -141,8 +127,8 @@ curl_setopt_array($ch, [
     CURLOPT_TIMEOUT        => 30,
 ]);
 $response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlErr  = curl_error($ch);
+$httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$curlErr   = curl_error($ch);
 curl_close($ch);
 
 if ($curlErr) {
@@ -154,36 +140,44 @@ if ($httpCode !== 200) {
     exit;
 }
 
-// ─── Parse response ───────────────────────────────────────────────────────────
+// ─── Extract JSON robustly ─────────────────────────────────────────────────────────
 $result = json_decode($response, true);
 $text   = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
 
-// Strip markdown code fences if present
-$text = preg_replace('/^```(?:json)?\s*/i', '', trim($text));
-$text = preg_replace('/\s*```$/', '', $text);
+// Find the first '{' and last '}' to extract the JSON object regardless
+// of any surrounding text, markdown fences, or explanations from the model.
+$start = strpos($text, '{');
+$end   = strrpos($text, '}');
 
-$workout = json_decode(trim($text), true);
-if (!$workout || !isset($workout['exercises']) || !is_array($workout['exercises'])) {
+if ($start === false || $end === false || $end <= $start) {
     http_response_code(500);
-    echo json_encode(['error' => 'Could not parse workout from AI response', 'raw' => $text]);
+    echo json_encode(['error' => 'No JSON object found in AI response', 'raw' => $text]);
     exit;
 }
 
-// ─── Validate exercise IDs ────────────────────────────────────────────────────
+$json    = substr($text, $start, $end - $start + 1);
+$workout = json_decode($json, true);
+
+if (!$workout || !isset($workout['exercises']) || !is_array($workout['exercises'])) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Could not parse workout JSON', 'raw' => $json]);
+    exit;
+}
+
+// ─── Validate & sanitise ──────────────────────────────────────────────────────────
 $validIds = array_column($exercises, 'id');
 $workout['exercises'] = array_values(
     array_filter($workout['exercises'], fn($id) => in_array($id, $validIds, true))
 );
 
 if (empty($workout['exercises'])) {
-    http_response_code(500); echo json_encode(['error' => 'No valid exercises in AI response', 'raw' => $text]); exit;
+    http_response_code(500);
+    echo json_encode(['error' => 'No valid exercise IDs in AI response', 'raw' => $json]);
+    exit;
 }
 
-// Clamp durations to sane ranges
 $workout['workDuration'] = max(10, min(120, intval($workout['workDuration'] ?? 30)));
 $workout['restDuration'] = max(5,  min(60,  intval($workout['restDuration']  ?? 10)));
-
-// Include which model was used (handy for debugging)
-$workout['_model'] = $model;
+$workout['_model']       = $model;
 
 echo json_encode($workout);
