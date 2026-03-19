@@ -40,22 +40,29 @@ function pick_text_model($apiKey) {
     foreach (json_decode($resp, true)['models'] ?? [] as $m) {
         $id = preg_replace('/^models\//', '', $m['name'] ?? '');
         if (!in_array('generateContent', $m['supportedGenerationMethods'] ?? [])) continue;
-        if (stripos($id, 'image')    !== false) continue;
-        if (stripos($id, 'thinking') !== false) continue;
-        if (stripos($id, 'tts')      !== false) continue;
-        if (stripos($id, 'computer') !== false) continue;
-        if (stripos($id, 'research') !== false) continue;
-        if (stripos($id, 'robotics') !== false) continue;
+        // Skip specialised / non-text models
+        foreach (['image','thinking','tts','computer','research','robotics','nano','banana'] as $skip) {
+            if (stripos($id, $skip) !== false) continue 2;
+        }
         $candidates[] = $id;
     }
     if (empty($candidates)) return [null, []];
 
     usort($candidates, function($a, $b) {
-        $score = fn($id) =>
-            (preg_match('/gemini-(\d+)/', $id, $m) ? (int)$m[1] : 0) * 10
-            + (stripos($id, 'flash') !== false ? 1 : 0);
+        $score = function($id) {
+            // Base score: major Gemini version number
+            $ver = preg_match('/gemini-(\d+)/', $id, $m) ? (int)$m[1] : 0;
+            // Bonus: flash models are fast and reliable for structured output
+            $flash = stripos($id, 'flash') !== false ? 2 : 0;
+            // Heavy penalty for preview/experimental — they often have output limits
+            $preview = (stripos($id, 'preview') !== false || stripos($id, 'exp') !== false) ? -20 : 0;
+            // Small penalty for lite models (less capable)
+            $lite = stripos($id, 'lite') !== false ? -1 : 0;
+            return $ver * 10 + $flash + $preview + $lite;
+        };
         return $score($b) - $score($a);
     });
+
     return [$candidates[0], $candidates];
 }
 
