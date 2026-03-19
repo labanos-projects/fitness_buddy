@@ -1,6 +1,7 @@
 <?php
 // ─── AI Workout Composer ─────────────────────────────────────────────────────
 // POST { prompt } → returns a structured workout JSON (may include newExercises)
+set_time_limit(90); // ensure PHP doesn't kill us before curl finishes
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -32,7 +33,11 @@ if (empty($userPrompt)) {
 function pick_text_model($apiKey) {
     $url = "https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}&pageSize=100";
     $ch  = curl_init($url);
-    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10]);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT        => 15,
+    ]);
     $resp = curl_exec($ch);
     curl_close($ch);
 
@@ -134,6 +139,8 @@ $payload = [
     'generationConfig' => [
         'temperature'     => 0.7,
         'maxOutputTokens' => 8192,
+        // Disable thinking tokens so the full budget goes to JSON output.
+        // Ignored by non-thinking models, safe to send unconditionally.
         'thinkingConfig'  => ['thinkingBudget' => 0],
     ],
 ];
@@ -144,7 +151,8 @@ curl_setopt_array($ch, [
     CURLOPT_POSTFIELDS     => json_encode($payload),
     CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_TIMEOUT        => 30,
+    CURLOPT_CONNECTTIMEOUT => 10,  // fail fast if server unreachable
+    CURLOPT_TIMEOUT        => 60,  // give Gemini up to 60s to respond
 ]);
 $response = curl_exec($ch);
 $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
