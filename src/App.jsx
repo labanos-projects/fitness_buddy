@@ -6,13 +6,15 @@ import Library from './components/Library';
 import AiComposer from './components/AiComposer';
 import WorkoutEditor from './components/WorkoutEditor';
 import useSavedRoutines from './hooks/useSavedRoutines';
+import useCustomExercises from './hooks/useCustomExercises';
 import './styles/App.css';
 
 export default function App() {
-  const [screen, setScreen]             = useState('home');
-  const [activeRoutine, setActiveRoutine]   = useState(null);
+  const [screen, setScreen]               = useState('home');
+  const [activeRoutine, setActiveRoutine] = useState(null);
   const [editingRoutine, setEditingRoutine] = useState(null);
   const { saved, saveRoutine, deleteRoutine } = useSavedRoutines();
+  const { customExercises, addExercises }     = useCustomExercises();
 
   const handleStart = (routine) => {
     setActiveRoutine(routine);
@@ -47,13 +49,17 @@ export default function App() {
         />
       )}
 
-      {screen === 'library' && <Library onBack={handleHome} />}
+      {screen === 'library' && (
+        <Library onBack={handleHome} customExercises={customExercises} />
+      )}
 
       {screen === 'compose' && (
         <AiComposer
           onStartRoutine={handleStart}
           onSave={saveRoutine}
           onBack={handleHome}
+          onAddExercises={addExercises}
+          customExercises={customExercises}
         />
       )}
 
@@ -64,6 +70,7 @@ export default function App() {
           onSave={(r) => { saveRoutine(r); handleHome(); }}
           onDelete={editingRoutine.isCustom ? (id) => { deleteRoutine(id); handleHome(); } : undefined}
           onBack={handleHome}
+          customExercises={customExercises}
         />
       )}
 
@@ -72,6 +79,7 @@ export default function App() {
           routine={activeRoutine}
           onComplete={() => setScreen('complete')}
           onQuit={handleHome}
+          customExercises={customExercises}
         />
       )}
 
