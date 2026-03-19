@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405); echo json_encode(['error' => 'Method not allowed']); exit;
 }
 
-// ─── Gemini config (mirrors regenerate.php) ──────────────────────────────────
+// ─── Gemini config ─────────────────────────────────────────────────────────────
 $configFile = __DIR__ . '/config.local.php';
 if (file_exists($configFile)) { require_once $configFile; }
 if (!defined('GEMINI_API_KEY')) {
@@ -27,9 +27,6 @@ $userPrompt = trim($data['prompt'] ?? '');
 if (empty($userPrompt)) {
     http_response_code(400); echo json_encode(['error' => 'prompt is required']); exit;
 }
-if (strlen($userPrompt) > 500) {
-    http_response_code(400); echo json_encode(['error' => 'prompt too long']); exit;
-}
 
 // ─── Discover best available text model ─────────────────────────────────────
 function pick_text_model($apiKey) {
@@ -44,9 +41,11 @@ function pick_text_model($apiKey) {
         $id = preg_replace('/^models\//', '', $m['name'] ?? '');
         if (!in_array('generateContent', $m['supportedGenerationMethods'] ?? [])) continue;
         if (stripos($id, 'image') !== false) continue;
+        // Skip thinking/experimental models that may not return plain text
+        if (stripos($id, 'thinking') !== false) continue;
         $candidates[] = $id;
     }
-    if (empty($candidates)) return null;
+    if (empty($candidates)) return [null, []];
 
     usort($candidates, function($a, $b) {
         $score = fn($id) =>
@@ -54,10 +53,10 @@ function pick_text_model($apiKey) {
             + (stripos($id, 'flash') !== false ? 1 : 0);
         return $score($b) - $score($a);
     });
-    return $candidates[0];
+    return [$candidates[0], $candidates];
 }
 
-$model = pick_text_model(GEMINI_API_KEY);
+[$model, $allCandidates] = pick_text_model(GEMINI_API_KEY);
 if (!$model) {
     http_response_code(500);
     echo json_encode(['error' => 'No suitable text generation model found on this API key']);
@@ -90,7 +89,6 @@ $exerciseLines = implode("\n", array_map(
     $exercises
 ));
 
-// ─── Build prompt ─────────────────────────────────────────────────────────────
 $fullPrompt = <<<PROMPT
 You are a fitness program designer. Create a workout routine based on this request: "{$userPrompt}"
 
@@ -136,22 +134,39 @@ if ($curlErr) {
 }
 if ($httpCode !== 200) {
     http_response_code(502);
-    echo json_encode(['error' => 'Gemini returned HTTP ' . $httpCode, 'model' => $model, 'detail' => json_decode($response, true)]);
+    echo json_encode(['error' => 'Gemini HTTP ' . $httpCode, 'model' => $model, 'detail' => json_decode($response, true)]);
     exit;
 }
 
-// ─── Extract JSON robustly ─────────────────────────────────────────────────────────
-$result = json_decode($response, true);
-$text   = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
+// ─── Extract JSON ──────────────────────────────────────────────────────────────
+$result    = json_decode($response, true);
+$candidate = $result['candidates'][0] ?? null;
+$text      = $candidate['content']['parts'][0]['text'] ?? '';
 
-// Find the first '{' and last '}' to extract the JSON object regardless
-// of any surrounding text, markdown fences, or explanations from the model.
+if (empty($text)) {
+    // Dump the full Gemini response so we can diagnose the structure
+    http_response_code(500);
+    echo json_encode([
+        'error'          => 'Empty text from Gemini',
+        'model'          => $model,
+        'all_candidates' => $allCandidates,
+        'finish_reason'  => $candidate['finishReason'] ?? null,
+        'gemini_raw'     => $result,
+    ]);
+    exit;
+}
+
 $start = strpos($text, '{');
 $end   = strrpos($text, '}');
 
 if ($start === false || $end === false || $end <= $start) {
     http_response_code(500);
-    echo json_encode(['error' => 'No JSON object found in AI response', 'raw' => $text]);
+    echo json_encode([
+        'error'          => 'No JSON object in AI response',
+        'model'          => $model,
+        'all_candidates' => $allCandidates,
+        'raw'            => $text,
+    ]);
     exit;
 }
 
@@ -160,7 +175,7 @@ $workout = json_decode($json, true);
 
 if (!$workout || !isset($workout['exercises']) || !is_array($workout['exercises'])) {
     http_response_code(500);
-    echo json_encode(['error' => 'Could not parse workout JSON', 'raw' => $json]);
+    echo json_encode(['error' => 'Could not parse workout JSON', 'model' => $model, 'raw' => $json]);
     exit;
 }
 
@@ -172,7 +187,7 @@ $workout['exercises'] = array_values(
 
 if (empty($workout['exercises'])) {
     http_response_code(500);
-    echo json_encode(['error' => 'No valid exercise IDs in AI response', 'raw' => $json]);
+    echo json_encode(['error' => 'No valid exercise IDs in AI response', 'model' => $model, 'raw' => $json]);
     exit;
 }
 
