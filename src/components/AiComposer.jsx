@@ -10,6 +10,22 @@ const EXAMPLE_PROMPTS = [
   '15 min core workout, no jumping',
 ];
 
+// Kick off illustration generation for a new exercise — fire and forget.
+// The endpoint is idempotent: if an illustration already exists it returns early.
+function autoIllustrate(exercise) {
+  fetch(`${API_BASE}/auto-illustrate.php`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      exercise_id:  exercise.id,
+      name:         exercise.name,
+      description:  exercise.description || '',
+      category:     exercise.category    || 'strength',
+      muscles:      exercise.muscles     || [],
+    }),
+  }).catch(() => {}); // intentionally silent — best-effort
+}
+
 export default function AiComposer({ onStartRoutine, onSave, onBack, onAddExercises, customExercises = [] }) {
   const [routine, setRoutine] = useState(null);
   const [prompt, setPrompt]   = useState('');
@@ -33,10 +49,13 @@ export default function AiComposer({ onStartRoutine, onSave, onBack, onAddExerci
       }
       const data = await res.json();
       data.id = 'ai-' + Date.now();
-      // Persist any newly invented exercises to the library
+
+      // Persist new exercises to the library and kick off illustration generation
       if (data.newExercises?.length) {
         onAddExercises?.(data.newExercises);
+        data.newExercises.forEach(autoIllustrate);
       }
+
       setRoutine(data);
     } catch (err) {
       setError('Couldn\'t generate a workout — ' + err.message);
