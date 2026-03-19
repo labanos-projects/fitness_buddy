@@ -1,9 +1,19 @@
-import { useState } from 'react';
-import exercises from '../data/exercises.json';
+import { useState, useMemo } from 'react';
+import builtInExercises from '../data/exercises.json';
 
-const EXERCISE_MAP = Object.fromEntries(exercises.map(e => [e.id, e]));
+export default function WorkoutEditor({ routine, onStart, onSave, onDelete, onBack, customExercises = [] }) {
+  // Merge built-in + custom exercises (custom may have been invented by AI)
+  const allExercises = useMemo(() => {
+    const seen = new Set(builtInExercises.map(e => e.id));
+    const custom = customExercises.filter(e => !seen.has(e.id));
+    return [...builtInExercises, ...custom];
+  }, [customExercises]);
 
-export default function WorkoutEditor({ routine, onStart, onSave, onDelete, onBack }) {
+  const exerciseMap = useMemo(
+    () => Object.fromEntries(allExercises.map(e => [e.id, e])),
+    [allExercises]
+  );
+
   const [name, setName]                 = useState(routine.name || 'My Workout');
   const [workDuration, setWorkDuration] = useState(routine.workDuration || 30);
   const [restDuration, setRestDuration] = useState(routine.restDuration || 10);
@@ -36,6 +46,10 @@ export default function WorkoutEditor({ routine, onStart, onSave, onDelete, onBa
   };
 
   const handleStart = () => onStart(edited());
+
+  // Split for the add panel
+  const builtInList = allExercises.filter(e => builtInExercises.some(b => b.id === e.id));
+  const customList  = allExercises.filter(e => !builtInExercises.some(b => b.id === e.id));
 
   return (
     <div className="workout-editor">
@@ -80,13 +94,16 @@ export default function WorkoutEditor({ routine, onStart, onSave, onDelete, onBa
 
       <div className="workout-editor-list">
         {exerciseIds.map((id, i) => {
-          const ex = EXERCISE_MAP[id];
+          const ex = exerciseMap[id];
+          const isNew = ex && !builtInExercises.some(b => b.id === id);
           return (
             <div key={`${id}-${i}`} className="editor-row">
               <span className="editor-row-num">{i + 1}</span>
               <div className="editor-row-info">
                 <p className="editor-row-name">{ex?.name || id}</p>
-                <span className="library-tag">{ex?.category}</span>
+                <span className={`library-tag${isNew ? ' library-tag-new' : ''}`}>
+                  {isNew ? '✨ ' : ''}{ex?.category || '?'}
+                </span>
               </div>
               <div className="editor-row-actions">
                 <button onClick={() => moveUp(i)}   disabled={i===0}                    aria-label="Move up">↑</button>
@@ -102,11 +119,21 @@ export default function WorkoutEditor({ routine, onStart, onSave, onDelete, onBa
         <div className="editor-add-panel">
           <p className="ai-examples-label">Pick an exercise to add:</p>
           <div className="editor-add-grid">
-            {exercises.map(ex => (
+            {builtInList.map(ex => (
               <button key={ex.id} className="ai-chip" onClick={() => add(ex.id)}>
                 {ex.name}
               </button>
             ))}
+            {customList.length > 0 && (
+              <>
+                <p className="editor-add-section-label">✨ Generated</p>
+                {customList.map(ex => (
+                  <button key={ex.id} className="ai-chip ai-chip-new" onClick={() => add(ex.id)}>
+                    {ex.name}
+                  </button>
+                ))}
+              </>
+            )}
           </div>
           <button className="back-btn" style={{marginTop:'0.5rem'}} onClick={() => setShowAddPanel(false)}>Cancel</button>
         </div>
