@@ -78,7 +78,7 @@ Respond with ONLY valid JSON, no explanation, no markdown:
 PROMPT;
 
 // ─── Call Gemini API ─────────────────────────────────────────────────────────
-$model = 'gemini-2.0-flash';
+$model = 'gemini-1.5-flash';
 $url   = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . GEMINI_API_KEY;
 
 $payload = [
