@@ -10,7 +10,7 @@ const EXAMPLE_PROMPTS = [
   '15 min core workout, no jumping',
 ];
 
-export default function AiComposer({ onStartRoutine, onSave, onBack }) {
+export default function AiComposer({ onStartRoutine, onSave, onBack, onAddExercises, customExercises = [] }) {
   const [routine, setRoutine] = useState(null);
   const [prompt, setPrompt]   = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,6 +33,10 @@ export default function AiComposer({ onStartRoutine, onSave, onBack }) {
       }
       const data = await res.json();
       data.id = 'ai-' + Date.now();
+      // Persist any newly invented exercises to the library
+      if (data.newExercises?.length) {
+        onAddExercises?.(data.newExercises);
+      }
       setRoutine(data);
     } catch (err) {
       setError('Couldn\'t generate a workout — ' + err.message);
@@ -48,6 +52,7 @@ export default function AiComposer({ onStartRoutine, onSave, onBack }) {
         onStart={onStartRoutine}
         onSave={onSave}
         onBack={() => setRoutine(null)}
+        customExercises={customExercises}
       />
     );
   }
@@ -58,7 +63,7 @@ export default function AiComposer({ onStartRoutine, onSave, onBack }) {
 
       <div className="ai-composer-header">
         <h1>AI <span>Composer</span></h1>
-        <p>Describe the workout you want and I’ll build it for you.</p>
+        <p>Describe the workout you want and I'll build it for you.</p>
       </div>
 
       <div className="ai-composer-input-area">
