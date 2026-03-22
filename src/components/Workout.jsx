@@ -1,1 +1,202 @@
-aW1wb3J0IHsgdXNlU3RhdGUsIHVzZUVmZmVjdCwgdXNlQ2FsbGJhY2ssIHVzZU1lbW8sIHVzZVJlZiB9IGZyb20gJ3JlYWN0JzsKaW1wb3J0IGJ1aWx0SW5FeGVyY2lzZXMgZnJvbSAnLi4vZGF0YS9leGVyY2lzZXMuanNvbic7CmltcG9ydCB1c2VUaW1lciBmcm9tICcuLi9ob29rcy91c2VUaW1lcic7CmltcG9ydCB1c2VBdWRpb0N1ZSBmcm9tICcuLi9ob29rcy91c2VBdWRpb0N1ZSc7CmltcG9ydCB1c2VTcGVlY2ggZnJvbSAnLi4vaG9va3MvdXNlU3BlZWNoJzsKaW1wb3J0IHVzZVdha2VMb2NrIGZyb20gJy4uL2hvb2tzL3VzZVdha2VMb2NrJzsKaW1wb3J0IEV4ZXJjaXNlQW5pbWF0aW9uIGZyb20gJy4vRXhlcmNpc2VBbmltYXRpb24nOwoKZXhwb3J0IGRlZmF1bHQgZnVuY3Rpb24gV29ya291dCh7IHJvdXRpbmUsIG9uQ29tcGxldGUsIG9uUXVpdCwgY3VzdG9tRXhlcmNpc2VzID0gW10gfSkgewogIC8vIE1lcmdlIGJ1aWx0LWluIGV4ZXJjaXNlcyB3aXRoIGFueSBBSS1nZW5lcmF0ZWQgY3VzdG9tIG9uZXMKICBjb25zdCBleGVyY2lzZU1hcCA9IHVzZU1lbW8oKCkgPT4gewogICAgY29uc3QgbWFwID0gT2JqZWN0LmZyb21FbnRyaWVzKGJ1aWx0SW5FeGVyY2lzZXMubWFwKGUgPT4gW2UuaWQsIGVdKSk7CiAgICBjdXN0b21FeGVyY2lzZXMuZm9yRWFjaChlID0+IHsgaWYgKCFtYXBbZS5pZF0pIG1hcFtlLmlkXSA9IGU7IH0pOwogICAgcmV0dXJuIG1hcDsKICB9LCBbY3VzdG9tRXhlcmNpc2VzXSk7CgogIGNvbnN0IFtleGVyY2lzZUluZGV4LCBzZXRFeGVyY2lzZUluZGV4XSA9IHVzZVN0YXRlKDApOwogIGNvbnN0IFtwaGFzZSwgc2V0UGhhc2VdID0gdXNlU3RhdGUoJ3JlYWR5Jyk7IC8vIHJlYWR5IHwgd29yayB8IHJlc3QgfCBkb25lCiAgY29uc3QgeyBzZWNvbmRzLCBpc1J1bm5pbmcsIHN0YXJ0LCBwYXVzZSwgcmVzdW1lLCBzdG9wIH0gPSB1c2VUaW1lcigpOwogIGNvbnN0IHsgcGxheUNvdW50ZG93blRpY2ssIHBsYXlQaGFzZVRyYW5zaXRpb24gfSA9IHVzZUF1ZGlvQ3VlKCk7CiAgY29uc3QgeyBzcGVhayB9ID0gdXNlU3BlZWNoKCk7CiAgY29uc3QgeyByZXF1ZXN0V2FrZUxvY2ssIHJlbGVhc2VXYWtlTG9jayB9ID0gdXNlV2FrZUxvY2soKTsKICBjb25zdCBbcGF1c2VkLCBzZXRQYXVzZWRdID0gdXNlU3RhdGUoZmFsc2UpOwogIGNvbnN0IHByZXZTZWNvbmRzUmVmID0gdXNlUmVmKHNlY29uZHMpOwogIGNvbnN0IHByZXZQaGFzZVJlZiA9IHVzZVJlZihudWxsKTsKCiAgY29uc3QgY3VycmVudEV4ZXJjaXNlSWQgPSByb3V0aW5lLmV4ZXJjaXNlc1tleGVyY2lzZUluZGV4XTsKICBjb25zdCBjdXJyZW50RXhlcmNpc2UgPSBleGVyY2lzZU1hcFtjdXJyZW50RXhlcmNpc2VJZF07CiAgY29uc3QgdG90YWxFeGVyY2lzZXMgPSByb3V0aW5lLmV4ZXJjaXNlcy5sZW5ndGg7CgogIC8vIEtlZXAgdGhlIHNjcmVlbiBhd2FrZSBkdXJpbmcgYWN0aXZlIHdvcmtvdXQgcGhhc2VzOyByZWxlYXNlIHdoZW4gcGF1c2VkIG9yIGRvbmUKICB1c2VFZmZlY3QoKCkgPT4gewogICAgY29uc3Qgc2hvdWxkS2VlcEF3YWtlID0gKHBoYXNlID09PSAncmVhZHknIHx8IHBoYXNlID09PSAnd29yaycgfHwgcGhhc2UgPT09ICdyZXN0JykgJiYgIXBhdXNlZDsKICAgIGlmIChzaG91bGRLZWVwQXdha2UpIHsKICAgICAgcmVxdWVzdFdha2VMb2NrKCk7CiAgICB9IGVsc2UgewogICAgICByZWxlYXNlV2FrZUxvY2soKTsKICAgIH0KICB9LCBbcGhhc2UsIHBhdXNlZCwgcmVxdWVzdFdha2VMb2NrLCByZWxlYXNlV2FrZUxvY2tdKTsKCiAgLy8gUmVsZWFzZSB3YWtlIGxvY2sgd2hlbiB0aGUgY29tcG9uZW50IHVubW91bnRzIChlLmcuIHVzZXIgcXVpdHMgbWlkLXdvcmtvdXQpCiAgdXNlRWZmZWN0KCgpID0+IHsKICAgIHJldHVybiAoKSA9PiB7CiAgICAgIHJlbGVhc2VXYWtlTG9jaygpOwogICAgfTsKICB9LCBbcmVsZWFzZVdha2VMb2NrXSk7CgogIGNvbnN0IHN0YXJ0V29yayA9IHVzZUNhbGxiYWNrKCgpID0+IHsKICAgIHNldFBoYXNlKCd3b3JrJyk7CiAgICBzdGFydChyb3V0aW5lLndvcmtEdXJhdGlvbiwgewogICAgICBvbkNvbXBsZXRlOiAoKSA9PiB7CiAgICAgICAgaWYgKGV4ZXJjaXNlSW5kZXggPCB0b3RhbEV4ZXJjaXNlcyAtIDEpIHsKICAgICAgICAgIHNldFBoYXNlKCdyZXN0Jyk7CiAgICAgICAgICBzdGFydChyb3V0aW5lLnJlc3REdXJhdGlvbiwgewogICAgICAgICAgICBvbkNvbXBsZXRlOiAoKSA9PiB7CiAgICAgICAgICAgICAgc2V0RXhlcmNpc2VJbmRleCgoaSkgPT4gaSArIDEpOwogICAgICAgICAgICB9LAogICAgICAgICAgfSk7CiAgICAgICAgfSBlbHNlIHsKICAgICAgICAgIHNldFBoYXNlKCdkb25lJyk7CiAgICAgICAgICBvbkNvbXBsZXRlKCk7CiAgICAgICAgfQogICAgICB9LAogICAgfSk7CiAgfSwgW2V4ZXJjaXNlSW5kZXgsIHRvdGFsRXhlcmNpc2VzLCByb3V0aW5lLCBzdGFydCwgb25Db21wbGV0ZV0pOwoKICAvLyBXaGVuIGV4ZXJjaXNlSW5kZXggY2hhbmdlcyAoYWZ0ZXIgcmVzdCksIHN0YXJ0IHRoZSBuZXh0IHdvcmsgcGhhc2UKICB1c2VFZmZlY3QoKCkgPT4gewogICAgaWYgKHBoYXNlID09PSAncmVzdCcgJiYgIWlzUnVubmluZyAmJiBleGVyY2lzZUluZGV4ID4gMCkgewogICAgICBzdGFydFdvcmsoKTsKICAgIH0KICB9LCBbZXhlcmNpc2VJbmRleF0pOwoKICAvLyBJbml0aWFsIGNvdW50ZG93biAvIHN0YXJ0CiAgdXNlRWZmZWN0KCgpID0+IHsKICAgIGlmIChwaGFzZSA9PT0gJ3JlYWR5JykgewogICAgICBzdGFydCgzLCB7CiAgICAgICAgb25Db21wbGV0ZTogKCkgPT4gc3RhcnRXb3JrKCksCiAgICAgIH0pOwogICAgfQogIH0sIFtdKTsKCiAgdXNlRWZmZWN0KCgpID0+IHsKICAgIGNvbnN0IHByZXZTZWNvbmRzID0gcHJldlNlY29uZHNSZWYuY3VycmVudDsKCiAgICBpZiAoc2Vjb25kcyA+IDAgJiYgc2Vjb25kcyA8PSAzICYmIHByZXZTZWNvbmRzID4gc2Vjb25kcykgewogICAgICBwbGF5Q291bnRkb3duVGljaygpOwogICAgfQoKICAgIGlmIChzZWNvbmRzID09PSAwICYmIHByZXZTZWNvbmRzID4gMCkgewogICAgICBwbGF5UGhhc2VUcmFuc2l0aW9uKCk7CiAgICB9CgogICAgcHJldlNlY29uZHNSZWYuY3VycmVudCA9IHNlY29uZHM7CiAgfSwgW3NlY29uZHMsIHBsYXlDb3VudGRvd25UaWNrLCBwbGF5UGhhc2VUcmFuc2l0aW9uXSk7CgogIHVzZUVmZmVjdCgoKSA9PiB7CiAgICBjb25zdCBwcmV2UGhhc2UgPSBwcmV2UGhhc2VSZWYuY3VycmVudDsKCiAgICBpZiAocGhhc2UgPT09ICdyZWFkeScgJiYgcGhhc2UgIT09IHByZXZQaGFzZSAmJiBjdXJyZW50RXhlcmNpc2U/Lm5hbWUpIHsKICAgICAgc3BlYWsoYEdldCByZWFkeSBmb3IgJHtjdXJyZW50RXhlcmNpc2UubmFtZX1gKTsKICAgIH0KCiAgICBpZiAocGhhc2UgPT09ICd3b3JrJyAmJiBwaGFzZSAhPT0gcHJldlBoYXNlICYmIGN1cnJlbnRFeGVyY2lzZT8ubmFtZSkgewogICAgICBzcGVhayhgU3RhcnQgJHtjdXJyZW50RXhlcmNpc2UubmFtZX1gKTsKICAgIH0KCiAgICBpZiAoCiAgICAgIHBoYXNlID09PSAncmVzdCcgJiYKICAgICAgcGhhc2UgIT09IHByZXZQaGFzZSAmJgogICAgICBleGVyY2lzZUluZGV4IDwgdG90YWxFeGVyY2lzZXMgLSAxCiAgICApIHsKICAgICAgY29uc3QgbmV4dEV4ZXJjaXNlSWQgPSByb3V0aW5lLmV4ZXJjaXNlc1tleGVyY2lzZUluZGV4ICsgMV07CiAgICAgIGNvbnN0IG5leHRFeGVyY2lzZSA9IGV4ZXJjaXNlTWFwW25leHRFeGVyY2lzZUlkXTsKICAgICAgaWYgKG5leHRFeGVyY2lzZT8ubmFtZSkgewogICAgICAgIHNwZWFrKGBOZXh0OiAke25leHRFeGVyY2lzZS5uYW1lfWApOwogICAgICB9CiAgICB9CgogICAgaWYgKHBoYXNlID09PSAnZG9uZScgJiYgcGhhc2UgIT09IHByZXZQaGFzZSkgewogICAgICBzcGVhaygnV29ya291dCBjb21wbGV0ZS4gTmljZSBqb2IuJyk7CiAgICB9CgogICAgcHJldlBoYXNlUmVmLmN1cnJlbnQgPSBwaGFzZTsKICB9LCBbcGhhc2UsIGN1cnJlbnRFeGVyY2lzZT8ubmFtZSwgZXhlcmNpc2VJbmRleCwgdG90YWxFeGVyY2lzZXMsIHJvdXRpbmUsIHNwZWFrXSk7CgogIGNvbnN0IGhhbmRsZVBhdXNlID0gKCkgPT4gewogICAgaWYgKHBhdXNlZCkgewogICAgICByZXN1bWUoKTsKICAgICAgc2V0UGF1c2VkKGZhbHNlKTsKICAgIH0gZWxzZSB7CiAgICAgIHBhdXNlKCk7CiAgICAgIHNldFBhdXNlZCh0cnVlKTsKICAgIH0KICB9OwoKICBjb25zdCBoYW5kbGVRdWl0ID0gKCkgPT4gewogICAgc3RvcCgpOwogICAgb25RdWl0KCk7CiAgfTsKCiAgY29uc3QgcHJvZ3Jlc3MgPSAoKGV4ZXJjaXNlSW5kZXgpIC8gdG90YWxFeGVyY2lzZXMpICogMTAwOwoKICBpZiAocGhhc2UgPT09ICdyZWFkeScpIHsKICAgIHJldHVybiAoCiAgICAgIDxkaXYgY2xhc3NOYW1lPSJ3b3Jrb3V0Ij4KICAgICAgICA8cCBjbGFzc05hbWU9IndvcmtvdXQtcGhhc2UiPkdldCBSZWFkeTwvcD4KICAgICAgICA8cCBjbGFzc05hbWU9ImV4ZXJjaXNlLW5hbWUiPntjdXJyZW50RXhlcmNpc2U/Lm5hbWUgfHwgY3VycmVudEV4ZXJjaXNlSWR9PC9wPgogICAgICAgIDxFeGVyY2lzZUFuaW1hdGlvbiBleGVyY2lzZUlkPXtjdXJyZW50RXhlcmNpc2VJZH0gLz4KICAgICAgICA8cCBjbGFzc05hbWU9e2B0aW1lci1kaXNwbGF5JHtzZWNvbmRzIDw9IDEgPyAnIHdhcm5pbmcnIDogJyd9YH0+e3NlY29uZHN9PC9wPgogICAgICAgIDxwIGNsYXNzTmFtZT0iZXhlcmNpc2UtZGVzY3JpcHRpb24iPntjdXJyZW50RXhlcmNpc2U/LmRlc2NyaXB0aW9ufTwvcD4KICAgICAgPC9kaXY+CiAgICApOwogIH0KCiAgcmV0dXJuICgKICAgIDxkaXYgY2xhc3NOYW1lPSJ3b3Jrb3V0Ij4KICAgICAgPHAgY2xhc3NOYW1lPXtgd29ya291dC1waGFzZSAke3BoYXNlfWB9PgogICAgICAgIHtwaGFzZSA9PT0gJ3dvcmsnID8gJ/CfkqogV29yaycgOiAn8J+YruKAjfCfkqggUmVzdCd9CiAgICAgIDwvcD4KCiAgICAgIDxwIGNsYXNzTmFtZT0iZXhlcmNpc2UtbmFtZSI+CiAgICAgICAge3BoYXNlID09PSAncmVzdCcgJiYgZXhlcmNpc2VJbmRleCA8IHRvdGFsRXhlcmNpc2VzIC0gMQogICAgICAgICAgPyBgTmV4dDogJHtleGVyY2lzZU1hcFtyb3V0aW5lLmV4ZXJjaXNlc1tleGVyY2lzZUluZGV4ICsgMV1dPy5uYW1lIHx8IHJvdXRpbmUuZXhlcmNpc2VzW2V4ZXJjaXNlSW5kZXggKyAxXX1gCiAgICAgICAgICA6IChjdXJyZW50RXhlcmNpc2U/Lm5hbWUgfHwgY3VycmVudEV4ZXJjaXNlSWQpfQogICAgICA8L3A+CgogICAgICA8RXhlcmNpc2VBbmltYXRpb24KICAgICAgICBleGVyY2lzZUlkPXsKICAgICAgICAgIHBoYXNlID09PSAncmVzdCcgJiYgZXhlcmNpc2VJbmRleCA8IHRvdGFsRXhlcmNpc2VzIC0gMQogICAgICAgICAgICA/IHJvdXRpbmUuZXhlcmNpc2VzW2V4ZXJjaXNlSW5kZXggKyAxXQogICAgICAgICAgICA6IGN1cnJlbnRFeGVyY2lzZUlkCiAgICAgICAgfQogICAgICAvPgoKICAgICAgPHAgY2xhc3NOYW1lPXtgdGltZXItZGlzcGxheSR7c2Vjb25kcyA8PSAzID8gJyB3YXJuaW5nJyA6ICcnfWB9PgogICAgICAgIHtzZWNvbmRzfQogICAgICA8L3A+CgogICAgICB7cGhhc2UgPT09ICd3b3JrJyAmJiAoCiAgICAgICAgPHAgY2xhc3NOYW1lPSJleGVyY2lzZS1kZXNjcmlwdGlvbiI+e2N1cnJlbnRFeGVyY2lzZT8uZGVzY3JpcHRpb259PC9wPgogICAgICApfQoKICAgICAgPGRpdiBjbGFzc05hbWU9InByb2dyZXNzLWJhciI+CiAgICAgICAgPGRpdgogICAgICAgICAgY2xhc3NOYW1lPSJwcm9ncmVzcy1iYXItZmlsbCIKICAgICAgICAgIHN0eWxlPXt7IHdpZHRoOiBgJHtwcm9ncmVzc30lYCB9fQogICAgICAgIC8+CiAgICAgIDwvZGl2PgoKICAgICAgPHAgY2xhc3NOYW1lPSJleGVyY2lzZS1jb3VudGVyIj4KICAgICAgICB7ZXhlcmNpc2VJbmRleCArIDF9IC8ge3RvdGFsRXhlcmNpc2VzfQogICAgICA8L3A+CgogICAgICA8ZGl2IGNsYXNzTmFtZT0iYnRuLWdyb3VwIj4KICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT0iYnRuIGJ0bi1zZWNvbmRhcnkiIG9uQ2xpY2s9e2hhbmRsZVBhdXNlfT4KICAgICAgICAgIHtwYXVzZWQgPyAn4pa2IFJlc3VtZScgOiAn4o+4IFBhdXNlJ30KICAgICAgICA8L2J1dHRvbj4KICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT0iYnRuIGJ0bi1zZWNvbmRhcnkiIG9uQ2xpY2s9e2hhbmRsZVF1aXR9PgogICAgICAgICAg4pyVIFF1aXQKICAgICAgICA8L2J1dHRvbj4KICAgICAgPC9kaXY+CiAgICA8L2Rpdj4KICApOwp9Cg==
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import builtInExercises from '../data/exercises.json';
+import useTimer from '../hooks/useTimer';
+import useAudioCue from '../hooks/useAudioCue';
+import useSpeech from '../hooks/useSpeech';
+import useWakeLock from '../hooks/useWakeLock';
+import ExerciseAnimation from './ExerciseAnimation';
+
+export default function Workout({ routine, onComplete, onQuit, customExercises = [] }) {
+  // Merge built-in exercises with any AI-generated custom ones
+  const exerciseMap = useMemo(() => {
+    const map = Object.fromEntries(builtInExercises.map(e => [e.id, e]));
+    customExercises.forEach(e => { if (!map[e.id]) map[e.id] = e; });
+    return map;
+  }, [customExercises]);
+
+  const [exerciseIndex, setExerciseIndex] = useState(0);
+  const [phase, setPhase] = useState('ready'); // ready | work | rest | done
+  const { seconds, isRunning, start, pause, resume, stop } = useTimer();
+  const { playCountdownTick, playPhaseTransition } = useAudioCue();
+  const { speak } = useSpeech();
+  const { requestWakeLock, releaseWakeLock } = useWakeLock();
+  const [paused, setPaused] = useState(false);
+  const prevSecondsRef = useRef(seconds);
+  const prevPhaseRef = useRef(null);
+
+  const currentExerciseId = routine.exercises[exerciseIndex];
+  const currentExercise = exerciseMap[currentExerciseId];
+  const totalExercises = routine.exercises.length;
+
+  // Release wake lock when the component unmounts (e.g. user quits mid-workout).
+  // The initial enable is handled in App.jsx's handleStart, which runs inside
+  // the RoutineCard onClick — a genuine user gesture required by iOS Safari.
+  useEffect(() => {
+    return () => {
+      releaseWakeLock();
+    };
+  }, [releaseWakeLock]);
+
+  const startWork = useCallback(() => {
+    setPhase('work');
+    start(routine.workDuration, {
+      onComplete: () => {
+        if (exerciseIndex < totalExercises - 1) {
+          setPhase('rest');
+          start(routine.restDuration, {
+            onComplete: () => {
+              setExerciseIndex((i) => i + 1);
+            },
+          });
+        } else {
+          setPhase('done');
+          onComplete();
+        }
+      },
+    });
+  }, [exerciseIndex, totalExercises, routine, start, onComplete]);
+
+  // When exerciseIndex changes (after rest), start the next work phase
+  useEffect(() => {
+    if (phase === 'rest' && !isRunning && exerciseIndex > 0) {
+      startWork();
+    }
+  }, [exerciseIndex]);
+
+  // Initial countdown / start
+  useEffect(() => {
+    if (phase === 'ready') {
+      start(3, {
+        onComplete: () => startWork(),
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const prevSeconds = prevSecondsRef.current;
+
+    if (seconds > 0 && seconds <= 3 && prevSeconds > seconds) {
+      playCountdownTick();
+    }
+
+    if (seconds === 0 && prevSeconds > 0) {
+      playPhaseTransition();
+    }
+
+    prevSecondsRef.current = seconds;
+  }, [seconds, playCountdownTick, playPhaseTransition]);
+
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current;
+
+    if (phase === 'ready' && phase !== prevPhase && currentExercise?.name) {
+      speak(`Get ready for ${currentExercise.name}`);
+    }
+
+    if (phase === 'work' && phase !== prevPhase && currentExercise?.name) {
+      speak(`Start ${currentExercise.name}`);
+    }
+
+    if (
+      phase === 'rest' &&
+      phase !== prevPhase &&
+      exerciseIndex < totalExercises - 1
+    ) {
+      const nextExerciseId = routine.exercises[exerciseIndex + 1];
+      const nextExercise = exerciseMap[nextExerciseId];
+      if (nextExercise?.name) {
+        speak(`Next: ${nextExercise.name}`);
+      }
+    }
+
+    if (phase === 'done' && phase !== prevPhase) {
+      speak('Workout complete. Nice job.');
+    }
+
+    prevPhaseRef.current = phase;
+  }, [phase, currentExercise?.name, exerciseIndex, totalExercises, routine, speak]);
+
+  // Pause/resume — these run directly inside button onClick handlers,
+  // so calling requestWakeLock on resume satisfies iOS's user-gesture requirement.
+  const handlePause = () => {
+    if (paused) {
+      resume();
+      setPaused(false);
+      requestWakeLock(); // re-enable wake lock on resume (user gesture ✓)
+    } else {
+      pause();
+      setPaused(true);
+      releaseWakeLock(); // release while paused
+    }
+  };
+
+  const handleQuit = () => {
+    stop();
+    releaseWakeLock();
+    onQuit();
+  };
+
+  const progress = ((exerciseIndex) / totalExercises) * 100;
+
+  if (phase === 'ready') {
+    return (
+      <div className="workout">
+        <p className="workout-phase">Get Ready</p>
+        <p className="exercise-name">{currentExercise?.name || currentExerciseId}</p>
+        <ExerciseAnimation exerciseId={currentExerciseId} />
+        <p className={`timer-display${seconds <= 1 ? ' warning' : ''}`}>{seconds}</p>
+        <p className="exercise-description">{currentExercise?.description}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="workout">
+      <p className={`workout-phase ${phase}`}>
+        {phase === 'work' ? '💪 Work' : '😮‍💨 Rest'}
+      </p>
+
+      <p className="exercise-name">
+        {phase === 'rest' && exerciseIndex < totalExercises - 1
+          ? `Next: ${exerciseMap[routine.exercises[exerciseIndex + 1]]?.name || routine.exercises[exerciseIndex + 1]}`
+          : (currentExercise?.name || currentExerciseId)}
+      </p>
+
+      <ExerciseAnimation
+        exerciseId={
+          phase === 'rest' && exerciseIndex < totalExercises - 1
+            ? routine.exercises[exerciseIndex + 1]
+            : currentExerciseId
+        }
+      />
+
+      <p className={`timer-display${seconds <= 3 ? ' warning' : ''}`}>
+        {seconds}
+      </p>
+
+      {phase === 'work' && (
+        <p className="exercise-description">{currentExercise?.description}</p>
+      )}
+
+      <div className="progress-bar">
+        <div
+          className="progress-bar-fill"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      <p className="exercise-counter">
+        {exerciseIndex + 1} / {totalExercises}
+      </p>
+
+      <div className="btn-group">
+        <button className="btn btn-secondary" onClick={handlePause}>
+          {paused ? '▶ Resume' : '⏸ Pause'}
+        </button>
+        <button className="btn btn-secondary" onClick={handleQuit}>
+          ↩ Quit
+        </button>
+      </div>
+    </div>
+  );
+}
