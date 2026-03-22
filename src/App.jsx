@@ -7,6 +7,7 @@ import AiComposer from './components/AiComposer';
 import WorkoutEditor from './components/WorkoutEditor';
 import useSavedRoutines from './hooks/useSavedRoutines';
 import useCustomExercises from './hooks/useCustomExercises';
+import { noSleep } from './hooks/useWakeLock';
 import './styles/App.css';
 
 export default function App() {
@@ -17,11 +18,16 @@ export default function App() {
   const { customExercises, addExercises }     = useCustomExercises();
 
   const handleStart = (routine) => {
+    // Enable wake lock here — we're inside a user gesture (RoutineCard onClick),
+    // which is required by iOS Safari's autoplay/media policy.
+    noSleep.enable().catch(() => {});
     setActiveRoutine(routine);
     setScreen('workout');
   };
 
   const handleHome = () => {
+    // Release wake lock when leaving the workout screen.
+    try { noSleep.disable(); } catch (e) {}
     setActiveRoutine(null);
     setEditingRoutine(null);
     setScreen('home');
