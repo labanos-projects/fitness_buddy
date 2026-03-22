@@ -132,7 +132,8 @@ body {
 .complete p  { color: var(--text-secondary); font-size: 1.1rem; }
 
 /* ---- Library ---- */
-.library { flex: 1; display: flex; flex-direction: column; padding: 1.5rem; max-width: 600px; margin: 0 auto; width: 100%; }
+/* padding-top accounts for iOS safe area (notch/Dynamic Island) in PWA mode */
+.library { flex: 1; display: flex; flex-direction: column; padding: 1.5rem; padding-top: calc(1.5rem + env(safe-area-inset-top)); max-width: 600px; margin: 0 auto; width: 100%; }
 .library-header { text-align: center; margin-bottom: 1.5rem; }
 .library-header h1 { font-size: 1.8rem; margin: 0.75rem 0 0.25rem; }
 .library-header p  { color: var(--text-muted); font-size: 0.9rem; }
@@ -201,9 +202,10 @@ body {
 .back-btn:hover { color: var(--text-primary); }
 
 /* ---- AI Composer ---- */
+/* padding-top accounts for iOS safe area (notch/Dynamic Island) in PWA mode */
 .ai-composer {
   flex: 1; display: flex; flex-direction: column; align-items: center;
-  padding: 2rem; gap: 2rem; max-width: 480px; margin: 0 auto; width: 100%;
+  padding: 2rem; padding-top: calc(2rem + env(safe-area-inset-top)); gap: 2rem; max-width: 480px; margin: 0 auto; width: 100%;
 }
 .ai-composer-header { text-align: center; }
 .ai-composer-header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
@@ -241,9 +243,10 @@ body {
 .ai-chip-new:hover:not(:disabled) { background: rgba(124,58,237,0.3); color: white; }
 
 /* ---- Workout Editor ---- */
+/* padding-top accounts for iOS safe area (notch/Dynamic Island) in PWA mode */
 .workout-editor {
   flex: 1; display: flex; flex-direction: column; align-items: center;
-  padding: 1.5rem; gap: 1.25rem;
+  padding: 1.5rem; padding-top: calc(1.5rem + env(safe-area-inset-top)); gap: 1.25rem;
   max-width: 480px; margin: 0 auto; width: 100%; padding-bottom: 2rem;
   overflow-y: auto;
 }
