@@ -21,13 +21,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* iOS PWA safe area (notch / Dynamic Island) — applied here on the root flex
-   container so it works for ALL screens, including .workout-editor which uses
-   overflow-y: auto. Putting env(safe-area-inset-top) inside padding-top on an
-   overflow: auto element triggers a known WebKit bug where the padding is not
-   reflected at the top of the scroll area, so the back button stays hidden
-   behind the notch. Applying it once on #root (no overflow) avoids the bug. */
-#root { min-height: 100dvh; display: flex; flex-direction: column; padding-top: env(safe-area-inset-top); }
+/* iOS PWA safe area (notch / Dynamic Island).
+   CRITICAL: wrapped in @supports so Vite / lightningcss cannot strip the
+   env() call during the production build.  At build time env() resolves to
+   0px and was being silently dropped from the output bundle — which is why
+   previous attempts showed no effect on device.
+   Padding goes on body (the natural document-scroll container) so it applies
+   to every screen.  This also avoids the WebKit overflow-y bug: if
+   env(safe-area-inset-top) were on a flex child with overflow:auto the
+   padding would not be reflected at the top of the scroll area.  */
+#root { min-height: 100dvh; display: flex; flex-direction: column; }
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  body  { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+  #root { min-height: calc(100dvh - env(safe-area-inset-top)); }
+}
 
 /* ---- Home ---- */
 .home {
